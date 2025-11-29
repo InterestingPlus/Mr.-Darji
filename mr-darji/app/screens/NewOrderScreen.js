@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -8,34 +8,15 @@ import {
   StatusBar,
   Image,
   Platform,
-  Alert,
 } from "react-native";
 
-// EXPO NOTIFICATIONS IMPORTS
-// NOTE: These dependencies (react-native, expo-notifications) are external and cannot be resolved in this online environment.
-// However, this code structure is correct for your local Expo project.
-import * as Notifications from "expo-notifications";
-
-// Notifications handler set up for foreground display (MUST be outside the component)
-// Yeh function app ke foreground mein hone par notification dikhane ke liye zaroori hai.
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true, // Notification alert dikhao
-    shouldPlaySound: true, // Notification sound bajao
-    shouldSetBadge: false,
-  }),
-});
-
-// Helper component for the icons (using text/emoji as a simple fallback for Expo)
 const Icon = ({ name, size = 24, color = "#111418" }) => {
   let iconContent = "";
   switch (name) {
     case "X":
-      // Simplified close icon (Band karne ka nishan)
       iconContent = "✕";
       break;
     case "CaretRight":
-      // Simplified caret right (Aage badhne ka nishan)
       iconContent = "›";
       break;
     default:
@@ -79,79 +60,14 @@ const CustomSwitch = ({ value, onValueChange }) => {
 const NewOrderScreen = () => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
 
-  // --- NOTIFICATION SETUP LOGIC (STEP 1) ---
-  // Notification ki anumati (permission) maangne aur listener set karne ke liye
-  useEffect(() => {
-    // Function to register for push notifications and set up the listener
-    const setupNotifications = async () => {
-      // 1. Request permissions (mandatory for notifications)
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-
-      if (finalStatus !== "granted") {
-        // Agar anumati na mile to user ko batana
-        Alert.alert(
-          "Permission Denied",
-          "Notification ki anumati (permission) nahi mili hai. Kripya app settings check karein."
-        );
-        return;
-      }
-      console.log("Notification permissions granted");
-    };
-
-    setupNotifications();
-
-    // 2. Setup listener for handling notifications when received
-    const notificationListener = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        // Logic to handle the notification object, if needed
-        console.log(
-          "Foreground notification received:",
-          notification.request.content.title
-        );
-      }
-    );
-
-    // Cleanup the listener when the component unmounts
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-    };
-  }, []);
-  // ----------------------------------------
-
-  // --- NOTIFICATION SCHEDULER FUNCTION (STEP 2) ---
-  // Order create hone par turant notification schedule karne ke liye
-  const scheduleOrderCreatedNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "✅ Order Created! 🎉", // Notification Title (Hindi/Emoji)
-        body: "Aapka order Liam Carter ke liye safaltapoorvak bana diya gaya hai.", // Notification Body in Hindi
-        data: { screen: "CustomerInfo", orderId: "001" }, // Custom data
-      },
-      trigger: null, // trigger: null ka matlab hai notification turant (immediately) dikhega
-    });
-    console.log("Notification scheduled successfully.");
-  };
-
   // --- BUTTON HANDLERS ---
   const handleClose = () => console.log("Close pressed");
   const handleSelectItem = () => console.log("Select Item pressed");
   const handleMeasurements = () => console.log("Input Measurements pressed");
   const handleDelivery = () => console.log("Set Delivery Date pressed");
 
-  const handleCreateOrder = () => {
+  const handleCreateOrder = () =>
     console.log("Create Order pressed - Processing order...");
-    // Order banane ka logic yahaan aayega...
-
-    // 'Order creation' ke baad notification trigger karna
-    scheduleOrderCreatedNotification();
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -241,7 +157,7 @@ const NewOrderScreen = () => {
         {/* Bottom Fixed Area (Neeche ka hissa - Footer) */}
         <View>
           <TouchableOpacity
-            style={styles.createButton}
+            // style={styles.createButton}
             onPress={handleCreateOrder}
             activeOpacity={0.8}
           >
