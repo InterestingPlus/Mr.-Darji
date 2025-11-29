@@ -11,6 +11,7 @@ const signToken = (payload) => {
 export const registerOwnerShop = async (req, res) => {
   const { name, phone, password, shopName, address } = req.body;
   // validate
+  console.log("Registration for,", name);
 
   const session = await mongoose.startSession();
   try {

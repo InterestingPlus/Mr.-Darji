@@ -69,7 +69,8 @@ export default function LoginScreen({ navigation }) {
     console.log("Login attempt:", { email, password, rememberMe });
     Alert.alert("Success", "Login safal! (Simulated)");
 
-    navigation.replace("MainTabs");
+    // navigation.replace("MainTabs");
+    navigation.navigate("Home");
   };
 
   return (
@@ -82,7 +83,9 @@ export default function LoginScreen({ navigation }) {
         {/* Back Button */}
         <TouchableOpacity
           style={styles.backButton}
-          // onPress={() => onNavigate("welcome")}
+          onPress={() => {
+            navigation.navigate("Home");
+          }}
           activeOpacity={0.7}
         >
           <Icon name="ArrowLeft" style={{ color: "#4B5563" }} />
@@ -100,7 +103,7 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.formContainer}>
           {/* Email Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email</Text>
+            <Text style={styles.inputLabel}>Sexy Email</Text>
             <View
               style={[
                 styles.inputWrapper,
@@ -384,4 +387,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
