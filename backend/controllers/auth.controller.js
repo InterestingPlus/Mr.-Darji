@@ -84,6 +84,8 @@ export const registerOwnerShop = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { phone, password } = req.body;
+    console.log(phone, password);
+
     if (!phone || !password) {
       return res.status(400).json({ message: "Phone and password required." });
     }
@@ -104,6 +106,8 @@ export const loginUser = async (req, res) => {
       shopId: user.shopId,
       language: user.language,
     });
+
+    console.log("token bhej diya gaya hai", token);
 
     res.json({
       token,

@@ -4,6 +4,7 @@ import OrdersListScreen from "../screens/OrdersListScreen";
 import CustomersScreen from "../screens/CustomersScreen";
 
 import CustomTabBarIcon from "../components/CustomTabBarIcon";
+import SettingsScreen from "../screens/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ export default function MainTabs() {
 
       <Tab.Screen
         name="Settings"
-        component={OrdersListScreen}
+        component={SettingsScreen}
         options={{
           tabBarLabel: ({ focused }) => null,
           tabBarIcon: ({ focused, route }) => (

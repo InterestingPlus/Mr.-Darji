@@ -13,7 +13,7 @@ export const authenticate = async (req, res, next) => {
       id: decoded.userId,
       role: decoded.role,
       shopId: decoded.shopId,
-      language: decoded.language,
+      language: decoded?.language,
     };
 
     try {

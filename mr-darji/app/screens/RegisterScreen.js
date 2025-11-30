@@ -14,6 +14,9 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // For beautiful gradients
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import BASE_URL from "../config";
 
 // --- Icon Component (Adapted from LoginScreen style) ---
 const CustomIcon = ({ name, color = "#4B5563", size = 20, style }) => {
@@ -120,15 +123,16 @@ export default function RegisterScreen({ navigation }) {
       setLoading(true);
 
       const response = await axios.post(
-        "https://mr-darji.onrender.com/api/auth/regiter-owner-shop",
+        `${BASE_URL}/api/auth/register-owner-shop`,
         {
-          ownerName: form.name,
+          name: form.name,
           dob: form.dob,
           phone: form.phone,
           password: form.password,
           shopName: form.shopName,
           establishedYear: form.year,
           language: language,
+          address: "Rajula",
         },
         {
           headers: {
@@ -137,20 +141,30 @@ export default function RegisterScreen({ navigation }) {
         }
       );
 
-      const token = res.data.token;
-      // store token (e.g., using AsyncStorage)
+      console.log("Axios: ", response);
+
+      const token = response.data.token;
+      await AsyncStorage.setItem("userToken", token);
+
       setLoading(false);
-      Alert.alert(
-        "Success",
-        "Registration Successful! Ab aap login kar sakte hain."
-      );
-      // navigation.navigate("Login");
+      Alert.alert("Registration Successful!");
+      navigation.replace("MainTabs");
     } catch (e) {
       setLoading(false);
+      console.log("Axios Error Object:", e);
+
+      const serverMessage =
+        e.response?.data?.error || e.response?.data?.message;
+
       const errorMessage =
-        e.response?.data?.message ||
-        "Something went wrong. Check network and server status.";
+        serverMessage ||
+        "Network Error or Server Unreachable. Check the console log.";
+
       Alert.alert("Registration Failed", errorMessage);
+
+      if (!e.response) {
+        console.log("This is a Network Failure (e.g., Timeout or DNS error).");
+      }
     }
   }
 
@@ -235,8 +249,7 @@ export default function RegisterScreen({ navigation }) {
 
                 <GradientButton
                   onPress={() => {
-                    Alert.alert("Login Tapped");
-                    // navigation.navigate("Login");
+                    navigation.navigate("Login");
                   }}
                   text="Login"
                   colors={["#F97316", "#FBBF24"]} // Orange/Amber

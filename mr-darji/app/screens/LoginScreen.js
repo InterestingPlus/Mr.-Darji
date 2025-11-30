@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,9 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import axios from "axios";
+import { AuthContext } from "../navigation/AppNavigator";
+import BASE_URL from "../config";
 
 // --- Icon Component (Mimicking Lucide Icons) ---
 const Icon = ({ name, style, onPress }) => {
@@ -18,7 +21,7 @@ const Icon = ({ name, style, onPress }) => {
 
   switch (name) {
     case "Mail":
-      iconContent = "✉️";
+      iconContent = "📞";
       break;
     case "Lock":
       iconContent = "🔒";
@@ -54,23 +57,54 @@ interface LoginScreenProps {
 */
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Kripya email aur password bharein.");
+  const [loading, setLoading] = useState(false);
+
+  const { signIn } = useContext(AuthContext);
+
+  const handleSubmit = async () => {
+    if (!phone || !password) {
+      Alert.alert("Error", "Kripya phone aur password bharein.");
       return;
     }
-    // Handle login logic here
-    console.log("Login attempt:", { email, password, rememberMe });
-    Alert.alert("Success", "Login safal! (Simulated)");
 
-    // navigation.replace("MainTabs");
-    navigation.navigate("Home");
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}/api/auth/login`,
+        {
+          phone,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Axios: ", response);
+
+      const token = response.data.token;
+      signIn(token);
+
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      console.log("Axios Error Object:", e);
+      Alert.alert("Error", e.response.data.message);
+
+      if (!e.response) {
+        console.log("This is a Network Failure (e.g., Timeout or DNS error).");
+        Alert.alert("Network Error");
+      }
+    }
   };
 
   return (
@@ -84,7 +118,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => {
-            navigation.navigate("Home");
+            navigation.navigate("Register");
           }}
           activeOpacity={0.7}
         >
@@ -101,30 +135,30 @@ export default function LoginScreen({ navigation }) {
 
         {/* Login Form */}
         <View style={styles.formContainer}>
-          {/* Email Input */}
+          {/* phone Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Sexy Email</Text>
+            <Text style={styles.inputLabel}>Phone Number</Text>
             <View
               style={[
                 styles.inputWrapper,
-                focusedField === "email" && styles.inputFocused,
+                focusedField === "phone" && styles.inputFocused,
               ]}
             >
               <Icon
                 name="Mail"
                 style={{
-                  color: focusedField === "email" ? "#4F46E5" : "#9CA3AF",
+                  color: focusedField === "phone" ? "#4F46E5" : "#9CA3AF",
                   marginLeft: 16,
                 }}
               />
               <TextInput
                 style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                onFocus={() => setFocusedField("email")}
+                value={phone}
+                onChangeText={setPhone}
+                onFocus={() => setFocusedField("phone")}
                 onBlur={() => setFocusedField(null)}
-                placeholder="your@email.com"
-                keyboardType="email-address"
+                placeholder="Phone Number"
+                keyboardType="numeric"
                 autoCapitalize="none"
                 placeholderTextColor="#9CA3AF"
                 returnKeyType="next"
@@ -190,10 +224,15 @@ export default function LoginScreen({ navigation }) {
           {/* Sign In Button */}
           <TouchableOpacity
             style={styles.signInButton}
-            onPress={handleSubmit}
+            onPress={() => {
+              if (loading) return;
+              handleSubmit();
+            }}
             activeOpacity={0.8}
           >
-            <Text style={styles.signInButtonText}>Sign In</Text>
+            <Text style={styles.signInButtonText}>
+              {loading ? "Logging in..." : "Login"}{" "}
+            </Text>
           </TouchableOpacity>
         </View>
 
