@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema(
     shopId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Shop",
-      required: true,
+      // required: true,
+      default: null,
     },
 
     language: {

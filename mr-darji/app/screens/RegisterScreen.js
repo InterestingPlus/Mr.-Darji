@@ -105,6 +105,8 @@ export default function RegisterScreen({ navigation }) {
   });
 
   async function register() {
+    console.log(form);
+
     if (form.password !== form.confirmPassword) {
       Alert.alert("Error", "Passwords do not match.");
       return;
@@ -117,7 +119,7 @@ export default function RegisterScreen({ navigation }) {
     try {
       setLoading(true);
 
-      const res = await axios.post(
+      const response = await axios.post(
         "https://mr-darji.onrender.com/api/auth/regiter-owner-shop",
         {
           ownerName: form.name,
@@ -126,7 +128,12 @@ export default function RegisterScreen({ navigation }) {
           password: form.password,
           shopName: form.shopName,
           establishedYear: form.year,
-          language,
+          language: language,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 

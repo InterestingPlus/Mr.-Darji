@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import User from "../models/User.model.js";
 import Shop from "../models/Shop.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const signToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -9,62 +11,72 @@ const signToken = (payload) => {
 };
 
 export const registerOwnerShop = async (req, res) => {
-  const { name, phone, password, shopName, address } = req.body;
-  // validate
-  console.log("Registration for,", name);
+  const {
+    name,
+    phone,
+    password,
+    shopName,
+    address,
+    // establishedYear,
+    // language,
+  } = req.body;
 
-  const session = await mongoose.startSession();
+  // validate and logging
+  console.log("Registration for,", req.body);
+  console.log(
+    "Name",
+    name,
+    "Phone",
+    phone,
+    "Password",
+    password,
+    "Shop Name",
+    shopName,
+    "Address",
+    address
+  );
+
   try {
-    session.startTransaction();
-
-    // check phone unique
-    if (await User.findOne({ phone }).session(session)) {
+    const existingUser = await User.findOne({ phone });
+    if (existingUser) {
       throw new Error("Phone already used");
     }
 
     const passwordHash = password ? await bcrypt.hash(password, 12) : null;
-    const user = await User.create(
-      [
-        {
-          name,
-          phone,
-          passwordHash,
-          role: "owner",
-        },
-      ],
-      { session }
-    );
 
-    const shop = await Shop.create(
-      [
-        {
-          name: shopName,
-          owner_id: user[0]._id,
-          address,
-        },
-      ],
-      { session }
-    );
-
-    // update user with shopId
-    await User.updateOne(
-      { _id: user[0]._id },
-      { $set: { shopId: shop[0]._id } }
-    ).session(session);
-
-    await session.commitTransaction();
-    session.endSession();
-
-    const token = createJwt({
-      userId: user[0]._id,
+    const user = await User.create({
+      name,
+      phone,
+      password: passwordHash,
       role: "owner",
-      shopId: shop[0]._id,
+      // dob, language
     });
 
-    res.json({ ok: true, user: user[0], shop: shop[0], token });
+    console.log("Created User", user);
+
+    const shop = await Shop.create({
+      name: shopName,
+      owner_id: user._id,
+      address,
+      // establishedYear,
+    });
+
+    console.log("Created Shop", shop);
+
+    await User.updateOne({ _id: user._id }, { $set: { shopId: shop._id } });
+
+    const token = signToken({
+      userId: user._id,
+      role: "owner",
+      shopId: shop._id,
+    });
+
+    console.log("Token", token);
+    console.log("Successfully Created");
+
+    res.json({ ok: true, user, shop, token });
   } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
+    console.error("Registration Error:", err.message);
     res.status(400).json({ error: err.message });
   }
 };

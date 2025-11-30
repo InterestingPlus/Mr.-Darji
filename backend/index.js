@@ -1,3 +1,5 @@
+// ssh-add ~/.ssh/id_ed25519
+
 import express from "express";
 import dotenv from "dotenv";
 import helmet from "helmet";
