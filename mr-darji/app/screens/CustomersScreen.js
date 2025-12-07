@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,208 +7,52 @@ import {
   ScrollView,
   TextInput,
   Image,
+  ActivityIndicator,
 } from "react-native";
+import axios from "axios";
 import Svg, { Path } from "react-native-svg";
+import BASE_URL from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import profilePicture from "../components/profilePicture";
 
-// --- SVG Icons ---
-
-// Magnifying Glass Icon (Used in Search Bar)
+// MagnifyingGlassIcon component
 const MagnifyingGlassIcon = ({ color = "#617589", size = 24 }) => (
   <Svg width={size} height={size} fill={color} viewBox="0 0 256 256">
     <Path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></Path>
   </Svg>
 );
 
-// Plus Icon (Used in FAB)
+// PlusIcon component
 const PlusIcon = ({ color = "#FFFFFF", size = 24 }) => (
   <Svg width={size} height={size} fill={color} viewBox="0 0 256 256">
     <Path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></Path>
   </Svg>
 );
 
-// --- Mock Data ---
-// Added mock address and measurements for the CustomerInfoScreen
-const MOCK_CUSTOMERS = [
-  {
-    id: "1",
-    name: "Sophia Clark",
-    phone: "+1 (555) 123-4567",
-    address: "123 Elm Street, Anytown, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCPZIxf5vg9BShZdjiWsTptTBjHeoSN-IRGzEzoOOtgcG3ivKKynHGBCE_CWGGT_2dSY5kzi1EiY-IqnW0Be-e5GBReQTZZXR42xTykhwnUQjP2-vWJK0QsFywq8BMrFq-ocAg20btdW9FoUOJ_T3jrP13FA7Y3BT_3srG7JtXtFevyswxHqSr4DVz5i0Z5aFh3XrzJfGl-HKIcTV75IK9d5F9tRXZBBFMxmdxrU9TINdju0V7PLzvg_5zqBmp8HZ8Z2mS4PItr_jMM",
-    measurements: {
-      Shirt: {
-        Neck: '15.5"',
-        Sleeve: '34"',
-        Chest: '40"',
-        Waist: '32"',
-        Shoulder: '18"',
-        Length: '28"',
-      },
-      Pant: {
-        Waist: '32"',
-        Inseam: '32"',
-        Outseam: '42"',
-        Thigh: '22"',
-        Knee: '16"',
-        Cuff: '14"',
-      },
-    },
-  },
-  {
-    id: "2",
-    name: "Ethan Bennett",
-    phone: "+1 (555) 987-6543",
-    address: "456 Oak Avenue, Otherville, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDPQqgDTDzQsUQRW4QqtioyhKb17JmIkAeymE8TkrwGOuRzwM-LxGZRmHzbK_Iu5vx1AUQh2ywuYreqN_PkBCDVKKsznKt1RiOgB05bZe9X6SRS-MGelUDpPUR1cgrVHzy3TAHQe_zRlCooLs2b1ueVh2KaGE85tLGDjDcppd6ae5rwMey3Y8D-IE9Ww2Bp31hi86raHxAoAZsa4jCHYYIrDfy0Db3h92Lsz-BJ5Y2gt08FUHjymiFvKyoRKG6JSnmHEAu2NIqGx-0h6wZQJtgBStB_VYML5pb8nw0DCIL1Y9M0_zhPy7ZTqWCpJdP_OkC8pQlbYZONZvlbmatlmH6wdmZ5omHM7iNF",
-    measurements: {
-      Shirt: {
-        Neck: '16"',
-        Sleeve: '35"',
-        Chest: '42"',
-        Waist: '34"',
-        Shoulder: '19"',
-        Length: '29"',
-      },
-      Pant: {
-        Waist: '34"',
-        Inseam: '33"',
-        Outseam: '43"',
-        Thigh: '23"',
-        Knee: '17"',
-        Cuff: '15"',
-      },
-    },
-  },
-  {
-    id: "3",
-    name: "Olivia Carter",
-    phone: "+1 (555) 246-8013",
-    address: "789 Pine Lane, Somewhere, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDvUJ-0MczFsjAR_53uUxjy1MNai7BwlpNkprSpR2Lpd6iExF2165nEzDOkubO1ceOWYwGPr30icdlL3FrtEfxF61UXzXGaCvp5FuDRCcWfeePobBx-yboLSkxxJrJEjJQJoNknnZcRqTNoJGTsCw95WcUz1u1c1HEZPEQX4XBxdsLUaYh1Wcla_O7mMjegHtFUOqg7utFZcRfHdX7YPefrTwcIDPUe5Xz0JTppS_BYCjOvekogerIOAiF3wTNlxFjCzlZDKBhfGfzf",
-    measurements: {
-      Shirt: {
-        Neck: '14"',
-        Sleeve: '32"',
-        Chest: '36"',
-        Waist: '28"',
-        Shoulder: '16"',
-        Length: '26"',
-      },
-      Pant: {
-        Waist: '28"',
-        Inseam: '30"',
-        Outseam: '40"',
-        Thigh: '20"',
-        Knee: '14"',
-        Cuff: '12"',
-      },
-    },
-  },
-  // Remaining customers just get the default measurements for simplicity
-  {
-    id: "4",
-    name: "Liam Davis",
-    phone: "+1 (555) 135-7911",
-    address: "987 Birch St, Villageland, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBXlfQ16LG7NnTgNu69qlkzTcSr6pJVZQ_3Njx-Lv28QJiK34bMO76BPR95Mlsgc7fWNH83W1FDRxgdFXq00O1SFUSf8KyGm3eTLMO5P3uJIeXhvIpxCGxDVeAEBfsFJWWZUYnkd6hy8Up9Ouu8yS0Sei6XNzIdS3axqwr1IAhIomE1mzekbGdWVw2xTJEfZOfkiN7M8AayMw2bUgsom9ED3x6VW_mW0LIZY8lFrFO4sif32O0KqusOLYLfMU9kdM4mGaK_nLvYmZub",
-    measurements: {
-      Shirt: {
-        Neck: '15"',
-        Sleeve: '33"',
-        Chest: '38"',
-        Waist: '30"',
-        Shoulder: '17"',
-        Length: '27"',
-      },
-      Pant: {
-        Waist: '30"',
-        Inseam: '31"',
-        Outseam: '41"',
-        Thigh: '21"',
-        Knee: '15"',
-        Cuff: '13"',
-      },
-    },
-  },
-  {
-    id: "5",
-    name: "Ava Evans",
-    phone: "+1 (555) 369-2580",
-    address: "654 Cedar Rd, Townsville, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBu8-euXEkTVOZTYHymu7Vpr9whxkn_mlfd7qLM8kLfvZNovt_haZj5MaWMdHOIQcOyESEwgSqiw16NnNxAxaZS5D5d24G4BT44i3Zk1Mf9dBdZbbegYvx-nhOvvabi1ivsdiyP-rYcboaoaywVzFdiuyOT4lP-M9ALZzR7Q2sFb5zzcM4MEEemTzO2nNTD8QzpBZho50nY8Yhw_8_GAabLqDJa55Agu39Ra3VhoCC4vBtRLE3pHvhH5gznh2zsU4BOuszJYMxyRYa2",
-    measurements: {
-      Shirt: {
-        Neck: '15"',
-        Sleeve: '33"',
-        Chest: '38"',
-        Waist: '30"',
-        Shoulder: '17"',
-        Length: '27"',
-      },
-      Pant: {
-        Waist: '30"',
-        Inseam: '31"',
-        Outseam: '41"',
-        Thigh: '21"',
-        Knee: '15"',
-        Cuff: '13"',
-      },
-    },
-  },
-  {
-    id: "6",
-    name: "Noah Foster",
-    phone: "+1 (555) 789-0123",
-    address: "321 Poplar Dr, Cityland, USA",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC2QbNi7OpE-znIkFODyNLU8A7o9B0wn1PPAgXD0yqggw20GJU3POPV9FIiOnEzFEHz8Xv8584gPO805axlHkNvv-Cxva9wcVIkc_lQNkJtJT_tqw0iefzRPktGOddAkk5dSTiA4GNl92Lsz-BJ5Y2gt08FUHjymiFvKyoRKG6JSnmHEAu2NIqGx-0h6wZQJtgBStB_VYML5pb8nw0DCIL1Y9M0_zhPy7ZTqWCpJdP_OkC8pQlbYZONZvlbmatlmH6wdmZ5omHM7iNF",
-    measurements: {
-      Shirt: {
-        Neck: '15"',
-        Sleeve: '33"',
-        Chest: '38"',
-        Waist: '30"',
-        Shoulder: '17"',
-        Length: '27"',
-      },
-      Pant: {
-        Waist: '30"',
-        Inseam: '31"',
-        Outseam: '41"',
-        Thigh: '21"',
-        Knee: '15"',
-        Cuff: '13"',
-      },
-    },
-  },
-];
-
 // --- Customer List Item Component ---
-
 const CustomerListItem = ({ customer, navigation }) => {
-  // Navigate to the Customer Info screen, passing the customer object
   const handlePress = () => {
-    navigation.navigate("CustomerInfo", { customer });
+    navigation.navigate("CustomerProfile", {
+      customer_id: customer.customer_id,
+      customer,
+    });
   };
 
   return (
     <TouchableOpacity style={styles.listItemContainer} onPress={handlePress}>
-      {/* Avatar */}
+      {/* image_url का उपयोग करें */}
       <Image
-        source={{ uri: customer.avatarUrl }}
+        source={{ uri: profilePicture(customer) }}
         style={styles.avatar}
-        accessibilityLabel={`${customer.name}'s profile picture`}
+        accessibilityLabel={`${customer.full_name}'s profile picture`}
       />
       {/* Text Content */}
       <View style={styles.textContainer}>
+        {/* full_name का उपयोग करें */}
         <Text style={styles.nameText} numberOfLines={1}>
-          {customer.name}
+          {customer.full_name}
         </Text>
+        {/* phone का उपयोग करें */}
         <Text style={styles.phoneText} numberOfLines={1}>
           {customer.phone}
         </Text>
@@ -222,17 +65,76 @@ const CustomerListItem = ({ customer, navigation }) => {
 
 export default function CustomersScreen({ navigation }) {
   const [searchText, setSearchText] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredCustomers = MOCK_CUSTOMERS.filter(
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+
+        const response = await axios.get(`${BASE_URL}/api/customers`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const apiData = response.data.data;
+
+        if (Array.isArray(apiData)) {
+          setCustomers(apiData);
+        } else {
+          throw new Error(
+            "Invalid data format: Expected an array under the 'data' key."
+          );
+        }
+      } catch (e) {
+        console.error("Failed to fetch customers:", e);
+        setError(`Failed to load customers: ${e.message || "Network Error"}`);
+      } finally {
+        // Axios अनुरोध रद्द होने पर भी, लोडिंग को रोकें
+
+        setIsLoading(false);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
+  const filteredCustomers = customers.filter(
     (customer) =>
-      customer.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      // full_name और phone का उपयोग करें
+      customer.full_name.toLowerCase().includes(searchText.toLowerCase()) ||
       customer.phone.includes(searchText)
   );
 
   const handleAddCustomer = () => {
-    console.log("Navigate to Add New Customer screen");
-    // navigation.navigate('AddCustomer'); // In a real app
+    navigation.navigate("AddCustomer");
   };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.fullScreenContainer, styles.centerScreen]}>
+        <ActivityIndicator size="large" color="#1380ec" />
+        <Text style={styles.loadingText}>Loading customers...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.fullScreenContainer, styles.centerScreen]}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+        <Text style={styles.errorSubText}>
+          Could not fetch data from the server.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.fullScreenContainer}>
@@ -243,14 +145,12 @@ export default function CustomersScreen({ navigation }) {
 
       {/* Scrollable Content (Search and List) */}
       <ScrollView style={styles.scrollContent}>
-        {/* Search Bar */}
+        {/* Search Bar (वही रहेगा) */}
         <View style={styles.searchBarWrapper}>
           <View style={styles.searchBarInputGroup}>
-            {/* Search Icon */}
             <View style={styles.searchIconContainer}>
               <MagnifyingGlassIcon />
             </View>
-            {/* Search Input */}
             <TextInput
               placeholder="Search customers"
               placeholderTextColor="#617589"
@@ -263,19 +163,27 @@ export default function CustomersScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Customer List */}
+        {/* Customer List / Empty State / No Results */}
         <View style={styles.listSection}>
-          {filteredCustomers.map((customer) => (
-            <CustomerListItem
-              key={customer.id}
-              customer={customer}
-              navigation={navigation}
-            />
-          ))}
-          {filteredCustomers.length === 0 && (
+          {customers.length === 0 && searchText === "" ? (
+            <View style={styles.emptyListContainer}>
+              <Text style={styles.noResultsText}>No customers added yet.</Text>
+              <Text style={styles.errorSubText}>
+                Tap the '+' button to add your first customer.
+              </Text>
+            </View>
+          ) : filteredCustomers.length === 0 ? (
             <Text style={styles.noResultsText}>
               No customers found matching "{searchText}"
             </Text>
+          ) : (
+            filteredCustomers.map((customer) => (
+              <CustomerListItem
+                key={customer.customer_id}
+                customer={customer}
+                navigation={navigation}
+              />
+            ))
           )}
         </View>
 
@@ -297,12 +205,36 @@ export default function CustomersScreen({ navigation }) {
   );
 }
 
-// --- Stylesheet ---
-
+// --- Stylesheet (वही रहेगा) ---
 const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  centerScreen: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#617589",
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#e63946",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  errorSubText: {
+    fontSize: 14,
+    color: "#617589",
+    textAlign: "center",
+  },
+  emptyListContainer: {
+    padding: 20,
+    alignItems: "center",
   },
   header: {
     flexDirection: "row",

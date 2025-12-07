@@ -45,7 +45,13 @@ export default function AppNavigator() {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        {userToken ? <MainTabs /> : <AuthStack />}
+        {userToken ? (
+          <>
+            <MainTabs />
+          </>
+        ) : (
+          <AuthStack />
+        )}
       </NavigationContainer>
     </AuthContext.Provider>
   );

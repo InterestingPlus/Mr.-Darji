@@ -1,20 +1,21 @@
 import { google } from "googleapis";
+import { SheetsConfig } from "../configs/sheets.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 export class GoogleSheetService {
   constructor() {
-    let credentials;
     if (!process.env.GOOGLE_SERVICE_AUTH) {
       throw new Error("GOOGLE_SERVICE_AUTH environment variable is not set.");
     }
 
-    const rawCredentialsString = process.env.GOOGLE_SERVICE_AUTH;
-    credentials = JSON.parse(rawCredentialsString);
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_AUTH);
 
-    if (credentials.private_key) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
-    } else {
+    if (!credentials.private_key) {
       throw new Error("Private key missing in Google credentials JSON.");
     }
+
+    credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
 
     this.auth = new google.auth.GoogleAuth({
       credentials,
@@ -33,40 +34,81 @@ export class GoogleSheetService {
     return this;
   }
 
+  /** Convert array row → object using SheetsConfig columns */
+  formatRow(entity, row) {
+    const config = SheetsConfig[entity];
+    if (!config) throw new Error(`Unknown entity ${entity}`);
+
+    return config.columns.reduce((obj, col, i) => {
+      obj[col] = row[i] ?? null;
+      return obj;
+    }, {});
+  }
+
+  /** Convert multiple rows */
+  formatRows(entity, rows) {
+    return rows.slice(1).map((row) => this.formatRow(entity, row));
+  }
+
   async insert(entity, values) {
     await this.init();
-    const range = `${entity}!A1:Z1`;
+    const { sheetName, columns } = SheetsConfig[entity];
 
-    return this.sheets.spreadsheets.values.append({
+    await this.sheets.spreadsheets.values.append({
       spreadsheetId: this.sheetId,
-      range,
+      range: `${sheetName}!A1:Z1`,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [values] },
     });
+
+    return this.formatRow(entity, values); // return inserted object
   }
 
   async read(entity) {
     await this.init();
-    const range = `${entity}!A1:Z9999`;
+    const { sheetName } = SheetsConfig[entity];
 
     const res = await this.sheets.spreadsheets.values.get({
       spreadsheetId: this.sheetId,
-      range,
+      range: `${sheetName}!A1:Z9999`,
     });
 
-    return res.data.values || [];
+    const rows = res.data.values || [];
+    if (rows.length === 0) return [];
+
+    return this.formatRows(entity, rows);
+  }
+
+  async findById(entity, id) {
+    await this.init();
+    const { sheetName } = SheetsConfig[entity];
+
+    const res = await this.sheets.spreadsheets.values.get({
+      spreadsheetId: this.sheetId,
+      range: `${sheetName}!A1:Z9999`,
+    });
+
+    const rows = res.data.values || [];
+    if (rows.length === 0) return [];
+
+    const found = rows.find((row) => row[0] === id);
+    if (found) return this.formatRow(entity, found);
+
+    return [];
   }
 
   async update(entity, rowIndex, values) {
     await this.init();
-    const range = `${entity}!A${rowIndex}:Z${rowIndex}`;
+    const { sheetName } = SheetsConfig[entity];
 
-    return this.sheets.spreadsheets.values.update({
+    await this.sheets.spreadsheets.values.update({
       spreadsheetId: this.sheetId,
-      range,
+      range: `${sheetName}!A${rowIndex}:Z${rowIndex}`,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [values] },
     });
+
+    return this.formatRow(entity, values); // return updated object
   }
 
   async deleteRow(entity, rowIndex) {
@@ -89,5 +131,23 @@ export class GoogleSheetService {
         ],
       },
     });
+  }
+
+  /** Helper to get numeric sheetId for delete operation */
+  async getSheetId(entity) {
+    await this.init();
+    const { sheetName } = SheetsConfig[entity];
+
+    const sheetMeta = await this.sheets.spreadsheets.get({
+      spreadsheetId: this.sheetId,
+    });
+
+    const sheet = sheetMeta.data.sheets.find(
+      (s) => s.properties.title === sheetName
+    );
+
+    if (!sheet) throw new Error(`Sheet not found: ${sheetName}`);
+
+    return sheet.properties.sheetId;
   }
 }

@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import DashboardScreen from "../screens/DashboardScreen";
-import OrdersListScreen from "../screens/OrdersListScreen";
-import CustomersScreen from "../screens/CustomersScreen";
 
 import CustomTabBarIcon from "../components/CustomTabBarIcon";
 import SettingsScreen from "../screens/SettingsScreen";
+import CustomersStack from "./CustomersStack";
+import OrdersStack from "./OrdersStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,8 +24,9 @@ export default function MainTabs() {
 
       <Tab.Screen
         name="Orders"
-        component={OrdersListScreen}
+        component={OrdersStack}
         options={{
+          unmountOnBlur: false,
           tabBarLabel: ({ focused }) => null,
           tabBarIcon: ({ focused, route }) => (
             <CustomTabBarIcon route={{ name: "Orders" }} focused={focused} />
@@ -35,7 +36,7 @@ export default function MainTabs() {
 
       <Tab.Screen
         name="Customers"
-        component={CustomersScreen}
+        component={CustomersStack}
         options={{
           tabBarLabel: ({ focused }) => null,
           tabBarIcon: ({ focused, route }) => (

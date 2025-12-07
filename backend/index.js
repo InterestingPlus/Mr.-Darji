@@ -8,6 +8,10 @@ import cors from "cors";
 import connectDB from "./configs/db.js";
 
 import authRoutes from "./routes/auth.routes.js";
+import customerRoutes from "./routes/costomer.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+import serviceRoutes from "./routes/services.routes.js";
+import measurementRoutes from "./routes/measurement.routes.js";
 
 dotenv.config();
 const app = express();
@@ -19,24 +23,15 @@ app.use(express.json());
 
 connectDB(process.env.MONGO_URI);
 
-// import { GoogleSheetService } from "./services/GoogleSheetService.js";
-// const sheet = new GoogleSheetService();
-// Insert example
-// await sheet.insert("Customers", [
-//   "CUS_001",
-//   "Jatin",
-//   "9876543210",
-//   "Some Address",
-//   "30-Jan-2025",
-// ]);
-// const allOrders = await sheet.read("Customers");
-// console.log(allOrders);
-
 app.get("/", (req, res) => {
   res.json({ message: "Mr. Darji, Server is Running" });
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/customers", customerRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/measurement", measurementRoutes);
+app.use("/api/services", serviceRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

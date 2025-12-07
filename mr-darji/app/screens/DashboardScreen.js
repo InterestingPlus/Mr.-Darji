@@ -105,7 +105,7 @@ export default function DashboardScreen({ navigation }) {
         description: "Create a new order",
         icon: PlusIcon,
         gradient: ["#5083FF", "#86A8FF"],
-        onPress: () => console.log("New Order: Functionality TBD"),
+        onPress: () => navigation.navigate("Orders", { screen: "CreateOrder" }),
       },
       {
         key: "ViewOrders",

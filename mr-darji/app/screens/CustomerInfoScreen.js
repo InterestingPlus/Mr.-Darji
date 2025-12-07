@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,11 @@ import {
 } from "react-native";
 // If using custom SVG icons, import them here. Using placeholder implementation for context.
 import Svg, { Path } from "react-native-svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import BASE_URL from "../config";
 
-// --- SVG Icons (Placeholder Implementation) ---
+import profilePicture from "../components/profilePicture";
 
 // Arrow Left Icon (Used for Back Button)
 const ArrowLeftIcon = ({ color = "#111418", size = 24 }) => (
@@ -63,27 +66,57 @@ const MeasurementCategory = ({ title, measurements }) => {
 // --- Main Customer Info Screen Component ---
 
 export default function CustomerInfoScreen({ route, navigation }) {
-  // 1. Get the customer object passed from CustomersScreen using route.params
-  const { customer } = route.params || {};
+  const { customer_id, customer: temp = {} } = route.params || {};
 
-  if (!customer || !customer.measurements) {
+  if (!customer_id) {
     return (
       <View style={styles.fullScreenContainer}>
-        <Text style={styles.noDataText}>Customer data not found.</Text>
+        <Text style={styles.noDataText}>Customer ID not found.</Text>
       </View>
     );
   }
 
-  // State to handle tab switching (Measurements or Orders)
+  const [customer, setCustomer] = useState(temp || {});
+  const [measurements, setMeasurements] = useState([]);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+
+        const response = await axios.get(
+          `${BASE_URL}/api/customers/${customer_id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const apiData = response.data.data;
+
+        if (apiData) {
+          setCustomer(apiData);
+        } else {
+          throw new Error("No Data. Found");
+        }
+      } catch (e) {
+        console.error("Failed to fetch customer:", e);
+      }
+    };
+
+    fetchCustomer();
+  }, [customer_id]);
+
   const [activeTab, setActiveTab] = useState("Measurements");
-  const { measurements } = customer;
 
   const handleBackPress = () => navigation.goBack();
 
   // --- Tab Content Renderer ---
   const renderTabContent = () => {
     if (activeTab === "Measurements") {
-      // Dynamically render measurement categories (Shirt, Pant, etc.)
       return (
         <View style={styles.tabContentContainer}>
           {Object.entries(measurements).map(([categoryTitle, measures]) => (
@@ -96,7 +129,6 @@ export default function CustomerInfoScreen({ route, navigation }) {
         </View>
       );
     } else if (activeTab === "Orders") {
-      // Placeholder for Orders List
       return (
         <View style={styles.tabContentContainer}>
           <Text style={styles.noDataText}>Orders history will be here.</Text>
@@ -125,18 +157,16 @@ export default function CustomerInfoScreen({ route, navigation }) {
             {/* Avatar */}
             <Image
               source={{
-                uri:
-                  customer.avatarUrl ||
-                  "https://placehold.co/128x128/eeeeee/111418?text=AV",
+                uri: profilePicture(customer),
               }}
               style={styles.profileAvatar}
-              accessibilityLabel={`${customer.name}'s profile picture`}
+              accessibilityLabel={`${customer?.full_name}'s profile picture`}
             />
             {/* Text Content */}
             <View style={styles.profileTextGroup}>
-              <Text style={styles.profileNameText}>{customer.name}</Text>
-              <Text style={styles.profileDetailText}>{customer.phone}</Text>
-              <Text style={styles.profileDetailText}>{customer.address}</Text>
+              <Text style={styles.profileNameText}>{customer?.full_name}</Text>
+              <Text style={styles.profileDetailText}>{customer?.phone}</Text>
+              <Text style={styles.profileDetailText}>{customer?.address}</Text>
             </View>
           </View>
         </View>

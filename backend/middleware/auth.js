@@ -9,7 +9,7 @@ export const authenticate = async (req, res, next) => {
     }
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    decodedUser = {
+    const decodedUser = {
       id: decoded.userId,
       role: decoded.role,
       shopId: decoded.shopId,
