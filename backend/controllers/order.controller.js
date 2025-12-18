@@ -16,7 +16,7 @@ export const CreateOrder = async (req, res) => {
       notes,
 
       payment_status,
-      due_amount,
+
       images,
       items = [],
     } = req.body;
@@ -80,7 +80,6 @@ export const CreateOrder = async (req, res) => {
       discount,
 
       payment_status,
-      due_amount,
 
       delivery_date,
 
@@ -121,7 +120,6 @@ export const CreateOrder = async (req, res) => {
     //   total_price,
     //   discount,
     //   payment_status,
-    //   due_amount,
 
     //   delivery_date,
     //   "",
@@ -148,24 +146,101 @@ export const OrderInfo = async (req, res) => {
     const { userDoc } = req;
     const { order_id } = req.params;
 
-    if (!order_id)
+    if (!order_id) {
       return res.status(400).json({ message: "Order ID not found." });
-
-    if (!userDoc) {
-      res.status(401).json({ message: "User not found.", data: [] });
     }
 
+    if (!userDoc) {
+      return res.status(401).json({ message: "User not found.", data: [] });
+    }
+
+    /* ---------------- ORDER ---------------- */
     const order = await sheet.findById("Orders", order_id);
+    if (!order) {
+      return res.status(200).json({ message: "No data found", data: [] });
+    }
 
-    if (order?.length == 0)
-      res.status(200).json({ message: "No data found", data: [] });
+    /* ---------------- CUSTOMER ---------------- */
+    const customer = await sheet.findById("Customers", order.customer_id);
+    order.customer = customer
+      ? {
+          customer_id: customer.customer_id,
+          full_name: customer.full_name,
+          phone: customer.phone,
+          address: customer.address,
+          tags: JSON.parse(customer.tags || "[]"),
+        }
+      : null;
 
-    console.log(order);
+    /* ---------------- MEASUREMENT MAP ---------------- */
+    const measurementItems = JSON.parse(order.measurement_id || "[]");
+    // [{ measurement_id, quantity }]
+    console.log(measurementItems);
 
-    res.status(200).json({ message: "Success", data: order });
+    console.log(
+      await sheet.findById(
+        "Measurements",
+        String(measurementItems[0]?.measurement_id)
+      )
+    );
+
+    const measurements = await Promise.all(
+      measurementItems.map((m) =>
+        sheet.findById("Measurements", String(m?.measurement_id))
+      )
+    );
+    console.log(measurements);
+
+    /* ---------------- SERVICES + ITEMS ---------------- */
+    order.items = [];
+    order.measurementSet = {};
+
+    for (let i = 0; i < measurementItems.length; i++) {
+      const mapItem = measurementItems[i];
+      const measurement = measurements[i];
+
+      if (!measurement) continue;
+
+      // 🔥 fetch service FIRST
+      const service = await sheet.findById("Services", measurement.service_id);
+
+      if (!service) continue;
+
+      // ✅ measurementSet (now service exists)
+      order.measurementSet[measurement.measurement_id] = {
+        service: service.name, // 👈 frontend friendly
+        service_id: measurement.service_id,
+        quantity: mapItem.quantity,
+        fields: JSON.parse(measurement.fields || "{}"),
+      };
+
+      // ✅ items
+      order.items.push({
+        service_id: service.service_id,
+        name: service.name,
+        price: Number(service.price),
+        estimated_days: service.estimated_days,
+        quantity: mapItem.quantity,
+        total_price: Number(service.price) * mapItem.quantity,
+        images: JSON.parse(service.images || "[]"),
+      });
+    }
+
+    /* ---------------- ORDER IMAGES ---------------- */
+    order.images = JSON.parse(order.images || "[]");
+
+    console.log("here is the order info", order);
+
+    return res.status(200).json({
+      message: "Success",
+      data: order,
+    });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error", data: [] });
+    console.error(err);
+    return res.status(500).json({
+      message: "Server error",
+      data: [],
+    });
   }
 };
 
@@ -207,6 +282,7 @@ export const AllOrders = async (req, res) => {
           discount: item.discount,
           payment_status: item.payment_status,
           delivery_date: item.delivery_date,
+          delivered_date: item.delivered_date,
           urgent: item.urgent,
           created_at: item.created_at,
           updated_at: item.updated_at,
@@ -218,5 +294,97 @@ export const AllOrders = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error", data: [] });
+  }
+};
+
+export const UpdateStatus = async (req, res) => {
+  try {
+    const { order_id } = req.params;
+    const { status } = req.body;
+    const { userDoc } = req;
+
+    if (!userDoc) {
+      res.status(401).json({ message: "User not found." });
+    }
+
+    const updated_at = new Date();
+
+    const prev_data = await sheet.findById("Orders", order_id);
+
+    if (status === "delivered") {
+      prev_data.delivered_date = updated_at;
+    }
+
+    await sheet.updateById("Orders", order_id, [
+      userDoc?.shopId,
+
+      prev_data?.customer_id,
+      prev_data?.staff_assigned_id,
+      prev_data?.measurement_id,
+
+      status,
+
+      prev_data?.total_price,
+      prev_data?.discount,
+      prev_data?.payment_status,
+      prev_data?.delivery_date,
+      prev_data?.delivered_date,
+      prev_data?.cancelled_at,
+      prev_data?.urgent,
+      prev_data?.notes,
+      prev_data?.images,
+      prev_data?.created_at,
+
+      updated_at,
+    ]);
+
+    res.status(200).json({ message: "Order Status updated to " + status });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const UpdatePayment = async (req, res) => {
+  try {
+    const { order_id } = req.params;
+    const { payment_status } = req.body;
+    const { userDoc } = req;
+
+    if (!userDoc) {
+      res.status(401).json({ message: "User not found." });
+    }
+
+    const updated_at = new Date();
+
+    const prev_data = await sheet.findById("Orders", order_id);
+
+    await sheet.updateById("Orders", order_id, [
+      userDoc?.shopId,
+
+      prev_data?.customer_id,
+      prev_data?.staff_assigned_id,
+      prev_data?.measurement_id,
+      prev_data?.status,
+      prev_data?.total_price,
+      prev_data?.discount,
+
+      payment_status || new Date(),
+
+      prev_data?.delivery_date,
+      prev_data?.delivered_date,
+      prev_data?.cancelled_at,
+      prev_data?.urgent,
+      prev_data?.notes,
+      prev_data?.images,
+      prev_data?.created_at,
+
+      updated_at,
+    ]);
+
+    res.status(200).json({ message: "Payment Recieved! Send Receipt =>" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
 };

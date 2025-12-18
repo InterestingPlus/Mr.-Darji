@@ -126,43 +126,38 @@ export default function OrdersListScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const token = await AsyncStorage.getItem("userToken");
-        if (!token) {
-          setError("Authentication required. Please log in again.");
-          return;
-        }
-
-        const response = await axios.get(`${BASE_URL}/api/orders`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const apiData = response.data.data || [];
-        setOrders(apiData);
-      } catch (e) {
-        console.error("Failed to fetch orders:", e);
-        const errorMessage =
-          e.response?.data?.message ||
-          e.message ||
-          "An unknown error occurred.";
-        setError(`Failed to load orders: ${errorMessage}`);
-      } finally {
-        setIsLoading(false);
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (!token) {
+        setError("Authentication required. Please log in again.");
+        return;
       }
-    };
 
+      const response = await axios.get(`${BASE_URL}/api/orders`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const apiData = response.data.data || [];
+      setOrders(apiData);
+    } catch (e) {
+      console.error("Failed to fetch orders:", e);
+      const errorMessage =
+        e.response?.data?.message || e.message || "An unknown error occurred.";
+      setError(`Failed to load orders: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchOrders();
-
-    const unsubscribe = navigation.addListener("focus", fetchOrders);
-    return unsubscribe;
-  }, [navigation]);
+  }, []);
 
   // UPDATED: 'pending' status को 'In Progress' में जोड़ा गया है
   const FILTER_TABS = [
@@ -221,10 +216,7 @@ export default function OrdersListScreen({ navigation }) {
         <View style={styles.centerMessage}>
           <Text style={styles.errorText}>⚠️ Error</Text>
           <Text style={styles.messageText}>{error}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => navigation.addListener("focus", () => {})}
-          >
+          <TouchableOpacity style={styles.retryButton} onPress={fetchOrders}>
             <Text style={styles.retryButtonText}>Tap to Retry</Text>
           </TouchableOpacity>
         </View>

@@ -42,7 +42,6 @@ export const SheetsConfig = {
       "total_price",
       "discount",
       "payment_status", // paid / partial / unpaid
-      "due_amount",
       "delivery_date",
       "delivered_date",
       "cancelled_at",

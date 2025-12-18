@@ -112,38 +112,42 @@ export class GoogleSheetService {
   }
 
   async updateById(entity, _id, values) {
-    await this.init();
-    const { sheetName } = SheetsConfig[entity];
+    try {
+      await this.init();
+      const { sheetName } = SheetsConfig[entity];
 
-    // 1️⃣ Get all rows
-    const res = await this.sheets.spreadsheets.values.get({
-      spreadsheetId: this.sheetId,
-      range: `${sheetName}!A:Z`,
-    });
+      // 1️⃣ Get all rows
+      const res = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: this.sheetId,
+        range: `${sheetName}!A:Z`,
+      });
 
-    const rows = res.data.values || [];
+      const rows = res.data.values || [];
 
-    // 2️⃣ Find row index by service_id (assuming ID in column A)
-    const rowIndex = rows.findIndex((row) => row[0] === _id);
+      // 2️⃣ Find row index by service_id (assuming ID in column A)
+      const rowIndex = rows.findIndex((row) => row[0] === _id);
 
-    if (rowIndex === -1) {
-      throw new Error("Service not found in sheet");
+      if (rowIndex === -1) {
+        throw new Error("Service not found in sheet");
+      }
+
+      // 3️⃣ Google Sheets = 1-based index
+      const sheetRow = rowIndex + 1;
+
+      // 4️⃣ Update row
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: this.sheetId,
+        range: `${sheetName}!A${sheetRow}:ZZ${sheetRow}`,
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: [[_id, ...values]],
+        },
+      });
+
+      return this.formatRow(entity, [_id, ...values]);
+    } catch (err) {
+      console.log(err);
     }
-
-    // 3️⃣ Google Sheets = 1-based index
-    const sheetRow = rowIndex + 1;
-
-    // 4️⃣ Update row
-    await this.sheets.spreadsheets.values.update({
-      spreadsheetId: this.sheetId,
-      range: `${sheetName}!A${sheetRow}:ZZ${sheetRow}`,
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [[_id, ...values]],
-      },
-    });
-
-    return this.formatRow(entity, [_id, ...values]);
   }
 
   async deleteRow(entity, rowIndex) {

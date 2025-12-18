@@ -10,9 +10,16 @@ import {
   Alert,
   Modal,
   TextInput,
+  Linking,
+  ActivityIndicator,
 } from "react-native";
 import { Icon, Divider, Badge, Button } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import BASE_URL from "../../config";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Assuming you have custom components for complex fields
 
 // --- MOCK DATA BASED ON SCHEMA ---
@@ -22,7 +29,7 @@ const mockOrderData = {
   delivery_date: "2025-12-18",
   urgent: true,
   status: "stitching",
-  payment_status: "partial",
+  payment_status: "",
   total_price: 3500,
   discount: 500,
   due_amount: 1500,
@@ -68,17 +75,33 @@ const ORDER_STATUSES = [
 // --- CUSTOM COMPONENTS ---
 
 // Function to calculate days left/delayed
-const getDeliveryStatus = (deliveryDate) => {
-  const today = new Date();
+const getDeliveryStatus = (deliveryDate, delivered_date) => {
   const delivery = new Date(deliveryDate);
-  const diffTime = delivery.getTime() - today.getTime();
+
+  // delivered_date hai to wahi reference date, warna today
+  const referenceDate = delivered_date ? new Date(delivered_date) : new Date();
+
+  const diffTime = delivery.getTime() - referenceDate.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0)
-    return { label: `${Math.abs(diffDays)} days delayed`, color: "error" };
-  if (diffDays <= 2)
-    return { label: `${diffDays} days left`, color: "warning" };
-  return { label: `${diffDays} days left`, color: "success" };
+  if (diffDays < 0) {
+    return {
+      label: `${Math.abs(diffDays)} days delayed`,
+      color: "error",
+    };
+  }
+
+  if (diffDays <= 2) {
+    return {
+      label: `${diffDays} days left`,
+      color: "warning",
+    };
+  }
+
+  return {
+    label: `${diffDays} days left`,
+    color: "success",
+  };
 };
 
 // --- COMPONENT FUNCTIONS ---
@@ -86,7 +109,13 @@ const getDeliveryStatus = (deliveryDate) => {
 // SECTION 4: Measurements Card (Editable)
 const MeasurementsSection = ({ measurementSet, onUpdateMeasurements }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [editData, setEditData] = useState(measurementSet);
+  const [editData, setEditData] = useState(measurementSet || {});
+
+  useEffect(() => {
+    if (measurementSet) {
+      setEditData(measurementSet);
+    }
+  }, [measurementSet]);
 
   const handleFieldChange = (mId, field, value) => {
     setEditData((prev) => ({
@@ -122,37 +151,48 @@ const MeasurementsSection = ({ measurementSet, onUpdateMeasurements }) => {
       {isExpanded && (
         <View>
           <Divider style={{ marginVertical: 10 }} />
-          {Object.keys(editData)?.map((mId) => (
-            <View key={mId} style={styles.measurementBlock}>
-              <Text style={styles.measurementHeader}>
-                {editData[mId].service} ({mId})
-              </Text>
 
-              {Object.entries(editData[mId].fields)?.map(([field, value]) => (
-                <View key={field} style={styles.inputRow}>
-                  <Text style={styles.inputLabel}>{field}:</Text>
-                  <TextInput
-                    style={styles.measurementInput}
-                    value={String(value)}
-                    onChangeText={(text) =>
-                      handleFieldChange(
-                        mId,
-                        field,
-                        text.replace(/[^0-9.]/g, "")
-                      )
-                    }
-                    keyboardType="numeric"
-                  />
-                </View>
-              ))}
-            </View>
-          ))}
+          {editData ? (
+            Object.keys(editData)?.map((mId) => (
+              <View key={mId} style={styles.measurementBlock}>
+                <Text style={styles.measurementHeader}>
+                  {editData[mId].service}
+                </Text>
 
-          <Button
-            title="Save Measurements"
-            onPress={handleSave}
-            buttonStyle={styles.saveButton}
-          />
+                {Object.entries(editData[mId]?.fields || {}).map(
+                  ([field, value]) => (
+                    <View key={field} style={styles.inputRow}>
+                      <Text style={styles.inputLabel}>{field}:</Text>
+                      <TextInput
+                        style={styles.measurementInput}
+                        value={String(value)}
+                        onChangeText={(text) =>
+                          handleFieldChange(
+                            mId,
+                            field,
+                            text.replace(/[^0-9.]/g, "")
+                          )
+                        }
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  )
+                )}
+              </View>
+            ))
+          ) : (
+            <ActivityIndicator size="small" color="#333" />
+          )}
+
+          {editData ? (
+            <Button
+              title="Save Measurements"
+              onPress={handleSave}
+              buttonStyle={styles.saveButton}
+            />
+          ) : (
+            <ActivityIndicator size="small" color="#333" />
+          )}
         </View>
       )}
     </View>
@@ -160,12 +200,15 @@ const MeasurementsSection = ({ measurementSet, onUpdateMeasurements }) => {
 };
 
 // SECTION 5: Status Timeline & Update (Editable)
-const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
-  console.log("currentStatus", currentStatus);
-
+const StatusTimelineAndUpdater = ({
+  currentStatus,
+  onStatusChange,
+  delivered_date,
+}) => {
   const [nextStatus, setNextStatus] = useState(null);
   const currentIndex = ORDER_STATUSES.indexOf(currentStatus);
   const nextIndex = currentIndex + 1;
+
   const isLastStatus = currentIndex === ORDER_STATUSES.length - 1;
 
   const handleUpdatePress = () => {
@@ -175,6 +218,8 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
         "This order is already marked as delivered."
       );
     setNextStatus(ORDER_STATUSES[nextIndex]);
+
+    confirmUpdate();
   };
 
   const confirmUpdate = () => {
@@ -193,7 +238,6 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
             onPress: () => {
               onStatusChange(nextStatus);
               setNextStatus(null);
-              Alert.alert("Updated", `Status changed to ${nextStatus}`);
             },
           },
         ]
@@ -207,7 +251,7 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
       <View style={styles.timelineContainer}>
         {ORDER_STATUSES.map((status, index) => {
           const isActive = index <= currentIndex;
-          const isCurrent = index === currentIndex;
+          const isCurrent = index === currentIndex + 1;
 
           let iconName, color;
           if (isActive && !isCurrent) {
@@ -226,6 +270,7 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
               <View style={styles.timelineIcon}>
                 <Icon name={iconName} type="material" size={20} color={color} />
               </View>
+
               {index < ORDER_STATUSES.length - 1 && (
                 <View
                   style={[
@@ -234,6 +279,7 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
                   ]}
                 />
               )}
+
               <Text
                 style={[
                   styles.timelineText,
@@ -250,8 +296,10 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
       <Button
         title={
           isLastStatus
-            ? "Order Delivered"
-            : `Mark as ${ORDER_STATUSES[nextIndex].toUpperCase()}`
+            ? "Order Delivered '" +
+              new Date(delivered_date)?.toLocaleDateString() +
+              "'"
+            : `Complete ${ORDER_STATUSES[nextIndex].toUpperCase()}`
         }
         onPress={handleUpdatePress}
         disabled={isLastStatus}
@@ -266,40 +314,28 @@ const StatusTimelineAndUpdater = ({ currentStatus, onStatusChange }) => {
 
 // SECTION 6: Payment Summary (Editable Action)
 const PaymentSummary = ({ orderData, onPaymentStatusChange }) => {
-  const {
-    total_price,
-    discount,
-    paid_amount = orderData.total_price - orderData.due_amount,
-    due_amount,
-    payment_status,
-  } = orderData;
+  const { total_price, discount, payment_status } = orderData;
 
   let badgeColor;
   switch (payment_status) {
-    case "paid":
-      badgeColor = "#34C759";
-      break;
-    case "partial":
-      badgeColor = "#FF9500";
+    case "":
+      badgeColor = "#FF3B30";
       break;
     default:
-      badgeColor = "#FF3B30";
+      badgeColor = "#34C759";
   }
 
   const handleMarkPaid = () => {
-    if (due_amount <= 0 && payment_status === "paid") {
-      return Alert.alert(
-        "Already Paid",
-        "Payment status is already marked as Paid."
-      );
+    if (payment_status !== "") {
+      return Alert.alert("Already Paid", "Payment is already Paid.");
     }
 
     Alert.alert(
-      "Mark as Full Paid",
+      "Mark as Paid",
       "Are you sure you want to mark the remaining due amount as paid?",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Confirm", onPress: () => onPaymentStatusChange("paid") },
+        { text: "Confirm", onPress: () => onPaymentStatusChange() },
       ]
     );
   };
@@ -316,41 +352,58 @@ const PaymentSummary = ({ orderData, onPaymentStatusChange }) => {
         <Text style={styles.summaryValue}>- ₹{discount}</Text>
       </View>
       <Divider style={{ marginVertical: 8 }} />
-      <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>Paid Amount:</Text>
-        <Text
-          style={[styles.summaryValue, { color: "#34C759", fontWeight: "700" }]}
-        >
-          ₹{paid_amount}
-        </Text>
-      </View>
-      <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>Due Amount:</Text>
-        <Text
-          style={[
-            styles.summaryValue,
-            {
-              color: due_amount > 0 ? "#FF3B30" : "#34C759",
-              fontWeight: "700",
-            },
-          ]}
-        >
-          ₹{due_amount}
-        </Text>
-      </View>
+
+      {payment_status !== "" ? (
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Paid Amount: </Text>
+          <Text
+            style={[
+              styles.summaryValue,
+              { color: "#34C759", fontWeight: "700" },
+            ]}
+          >
+            ₹{total_price - discount}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Due Amount:</Text>
+          <Text
+            style={[
+              styles.summaryValue,
+              {
+                color: "#FF3B30",
+                fontWeight: "700",
+              },
+            ]}
+          >
+            ₹{total_price - discount}
+          </Text>
+        </View>
+      )}
+
       <Badge
-        value={payment_status.toUpperCase()}
+        value={payment_status !== "" ? "Paid" : "Unpaid"}
         status="success"
         badgeStyle={[styles.paymentBadge, { backgroundColor: badgeColor }]}
       />
 
       <Button
-        title="Mark Remaining Due as Paid"
+        title={
+          payment_status !== ""
+            ? "Order Paid '" +
+              new Date(payment_status)?.toLocaleDateString() +
+              "'"
+            : "Mark as Paid"
+        }
         onPress={handleMarkPaid}
-        disabled={payment_status === "paid"}
+        disabled={payment_status !== ""}
         buttonStyle={[
           styles.saveButton,
-          { backgroundColor: "#007AFF", marginTop: 15 },
+          {
+            backgroundColor: `${payment_status !== "" ? "#888" : "#282d32ff"}`,
+            marginTop: 15,
+          },
         ]}
       />
     </View>
@@ -361,8 +414,8 @@ const PaymentSummary = ({ orderData, onPaymentStatusChange }) => {
 export default function OrderInfoScreen({ route, navigation }) {
   // State to hold and manage the editable parts of the order
   const [orderState, setOrderState] = useState(route.params.orderData);
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log(orderState);
   const data = {
     created_at: "2025-12-08T02:26:39.633Z",
     customer: "Jatin Poriya",
@@ -376,33 +429,115 @@ export default function OrderInfoScreen({ route, navigation }) {
     urgent: "FALSE",
   };
 
-  useEffect(() => {
-    navigation.setOptions({ title: `Order #${orderState.order_id}` });
-  }, [navigation, orderState.order_id]);
+  async function fetchOrderData() {
+    try {
+      setIsLoading(true);
 
-  const deliveryInfo = getDeliveryStatus(orderState.delivery_date);
+      const token = await AsyncStorage.getItem("userToken");
+
+      const response = await axios.get(
+        `${BASE_URL}/api/orders/${route.params.orderData.id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("This is Order info", response?.data?.data);
+
+      setOrderState(response?.data?.data);
+    } catch (error) {
+      console.error("Error fetching order data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    navigation.setOptions({ title: `Order #${route.params.orderData.id}` });
+
+    fetchOrderData();
+  }, [navigation, route.params.orderData.id]);
+
+  const deliveryInfo = getDeliveryStatus(
+    orderState.delivery_date,
+    orderState.delivered_date
+  );
 
   // Handlers for Editable Sections
-  const handleStatusChange = (newStatus) => {
-    setOrderState((prev) => ({ ...prev, status: newStatus }));
-    // TODO: Call API
+  const handleStatusChange = async (newStatus) => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+
+      const response = await axios.put(
+        `${BASE_URL}/api/orders/status/${route.params.orderData.id}`,
+        {
+          status: newStatus,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setOrderState((prev) => ({ ...prev, status: newStatus }));
+      fetchOrderData();
+
+      if (newStatus === "ready") {
+        const text = "Your order is Ready for pickup";
+
+        Linking.openURL(
+          `https://wa.me/91${orderState?.customer?.phone}?text=${text}`
+        );
+      }
+
+      Alert.alert("Success", response.data.message);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      Alert.alert("Error", "Failed to update order status.");
+    }
   };
 
-  const handlePaymentChange = (newStatus) => {
-    // Mock logic: If marked 'paid', set due_amount to 0
-    const newDue = newStatus === "paid" ? 0 : mockOrderData.due_amount;
-    const newPaid =
-      newStatus === "paid"
-        ? mockOrderData.total_price
-        : mockOrderData.total_price - mockOrderData.due_amount;
+  const handlePaymentChange = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
 
-    setOrderState((prev) => ({
-      ...prev,
-      payment_status: newStatus,
-      due_amount: newDue,
-      paid_amount: newPaid,
-    }));
-    // TODO: Call API
+      const response = await axios.put(
+        `${BASE_URL}/api/orders/payment/${route.params.orderData.id}`,
+        {
+          payment_status: new Date(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setOrderState((prev) => ({
+        ...prev,
+        payment_status: new Date(),
+      }));
+      fetchOrderData();
+
+      Alert.alert("Success", response.data.message);
+
+      let text = `Your Payment Receipt : https://mr-darji.netlify.app/receipt/${route.params.orderData.id}`;
+
+      Linking.openURL(
+        `https://wa.me/91${
+          orderState?.customer?.phone || ""
+        }?text=${encodeURIComponent(text)}`
+      );
+    } catch (error) {
+      console.error("payment", error);
+      Alert.alert("Error", "Failed to update payment status.");
+    }
   };
 
   const handleMeasurementsUpdate = (newMeasurements) => {
@@ -414,20 +549,22 @@ export default function OrderInfoScreen({ route, navigation }) {
     <SafeAreaView style={styles.rootContainer}>
       {/* SECTION 1: Order Header (Sticky - Fixed Position) */}
       <View style={styles.headerFixed}>
-        <Text style={styles.headerOrderId}>ORDER #{orderState.order_id}</Text>
+        <Text style={styles.headerOrderId}>
+          ORDER #{route.params.orderData.id}
+        </Text>
         <View style={styles.headerInfoRow}>
           <Badge
-            value={orderState.status.toUpperCase()}
+            value={orderState?.status?.toUpperCase()}
             status="primary"
             badgeStyle={[
               styles.statusBadge,
               {
                 backgroundColor:
-                  deliveryInfo.color === "error" ? "#FF3B30" : "#007AFF",
+                  orderState.status === "delivered" ? "#34C759" : "#007AFF",
               },
             ]}
           />
-          {orderState.urgent && (
+          {orderState.urgent === "TRUE" && (
             <Badge
               value="⚠ URGENT"
               status="error"
@@ -469,41 +606,58 @@ export default function OrderInfoScreen({ route, navigation }) {
             <Icon name="chevron-right" type="material" color="#555" />
           </View>
           <Divider style={{ marginVertical: 8 }} />
-          <Text style={styles.detailTextLarge}>
-            {orderState?.customer?.full_name}
-            {orderState?.customer?.tags?.map((tag) => (
-              <Text key={tag} style={styles.customerTag}>
-                {" "}
-                ({tag})
+
+          {!isLoading ? (
+            <>
+              <Text style={styles.detailTextLarge}>
+                {orderState?.customer?.full_name}
+                {orderState?.customer?.tags?.map((tag) => (
+                  <Text key={tag} style={styles.customerTag}>
+                    {" "}
+                    ({tag})
+                  </Text>
+                ))}
               </Text>
-            ))}
-          </Text>
-          <Text style={styles.detailText}>
-            📞 {orderState.customer.phone} (Tap to Call)
-          </Text>
-          <Text style={styles.detailText}>
-            📍 {orderState.customer.address}
-          </Text>
+              <Text style={styles.detailText}>
+                📞 {orderState.customer.phone}
+              </Text>
+              <Text style={styles.detailText}>
+                📍 {orderState.customer.address}
+              </Text>
+            </>
+          ) : (
+            <ActivityIndicator size="small" color="#333" />
+          )}
         </TouchableOpacity>
 
         {/* SECTION 3: Order Items & Services (Non-Editable Info) */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Items & Services</Text>
           <Divider style={{ marginVertical: 8 }} />
-          {orderState?.items?.map((item, index) => (
-            <View key={index} style={styles.itemRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.itemTitle}>{item.name}</Text>
-                <Text style={styles.itemSubtitle}>
-                  Est. Days: {item.estimated_days}
-                </Text>
-                <Text style={styles.itemSubtitle}>
-                  Msmts: {item.measurement_id}
-                </Text>
+
+          {!isLoading ? (
+            orderState?.items?.map((item, index) => (
+              <View key={index} style={styles.itemRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.itemTitle}>
+                    {item.name} × {item.quantity}
+                  </Text>
+
+                  <Text style={styles.itemSubtitle}>
+                    Est. Days: {item.estimated_days}
+                  </Text>
+
+                  <Text style={styles.itemSubtitle}>
+                    Total: ₹{item.total_price}
+                  </Text>
+                </View>
+
+                <Text style={styles.itemPrice}>₹{item.price}</Text>
               </View>
-              <Text style={styles.itemPrice}>₹{item.price}</Text>
-            </View>
-          ))}
+            ))
+          ) : (
+            <ActivityIndicator size="small" color="#333" />
+          )}
         </View>
 
         {/* SECTION 4: Measurements (Editable Component) */}
@@ -516,7 +670,69 @@ export default function OrderInfoScreen({ route, navigation }) {
         <StatusTimelineAndUpdater
           currentStatus={orderState.status}
           onStatusChange={handleStatusChange}
+          delivered_date={orderState.delivered_date}
         />
+
+        {/* SECTION 9: Delivery Actions (Conditional) */}
+        <View style={[styles.card, styles.deliveryActions]}>
+          <Text style={styles.sectionTitle}>Delivery Actions</Text>
+          {orderState?.status !== "ready" &&
+          orderState?.status !== "delivered" ? (
+            <Button
+              title="Mark as Ready"
+              onPress={() => {
+                Alert.alert(
+                  "Confirm Status Update",
+                  `Change status to Ready?`,
+                  [
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                      onPress: () => {},
+                    },
+                    {
+                      text: "Confirm",
+                      onPress: () => {
+                        handleStatusChange("ready");
+                      },
+                    },
+                  ]
+                );
+              }}
+              buttonStyle={[
+                styles.updateButton,
+                {
+                  backgroundColor: "#fff",
+                  borderColor: "#34C759",
+                  borderWidth: 1,
+                },
+              ]}
+              titleStyle={{ color: "#34C759" }}
+              containerStyle={{ marginBottom: 10 }}
+            />
+          ) : null}
+
+          {orderState?.payment_status === "" ? (
+            <Button
+              title="Send Bill"
+              onPress={() => {
+                let text = `Hi, here's the link to your Invoice: https://mr-darji.netlify.app/bill/${route.params.orderData.id}`;
+
+                Linking.openURL(
+                  `https://wa.me/91${
+                    orderState?.customer?.phone || ""
+                  }?text=${encodeURIComponent(text)}`
+                );
+              }}
+              type="outline"
+              buttonStyle={[
+                styles.updateButton,
+                { backgroundColor: "#34C759" },
+              ]}
+              titleStyle={{ color: "#fff" }}
+            />
+          ) : null}
+        </View>
 
         {/* SECTION 6: Payment Summary (Editable Component) */}
         <PaymentSummary
@@ -552,8 +768,8 @@ export default function OrderInfoScreen({ route, navigation }) {
 
         {/* SECTION 8: Notes & Activity Log */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Notes & Activity Log</Text>
-          <Text style={styles.sectionSubtitle}>Internal Notes (Editable)</Text>
+          <Text style={styles.sectionTitle}>Notes</Text>
+          {/* <Text style={styles.sectionSubtitle}>Internal Notes (Editable)</Text> */}
           <TextInput
             style={styles.notesInput}
             multiline
@@ -566,10 +782,10 @@ export default function OrderInfoScreen({ route, navigation }) {
           <Button
             title="Save Notes"
             buttonStyle={[styles.saveButton, { marginBottom: 15 }]}
-            onPress={() => Alert.alert("Success", "Notes Saved (Mock API)")}
+            onPress={() => Alert.alert("Success", "Notes Saved")}
           />
 
-          <Text style={styles.sectionSubtitle}>Activity Log (Audit Trail)</Text>
+          {/* <Text style={styles.sectionSubtitle}>Activity Log (Audit Trail)</Text>
           <View style={styles.activityLog}>
             <Text style={styles.logItem}>
               • Status changed to Received (10 Dec)
@@ -580,31 +796,8 @@ export default function OrderInfoScreen({ route, navigation }) {
             <Text style={styles.logItem}>
               • Staff changed to Ramesh (12 Dec)
             </Text>
-          </View>
+          </View> */}
         </View>
-
-        {/* SECTION 9: Delivery Actions (Conditional) */}
-        {orderState.status === "ready" && (
-          <View style={[styles.card, styles.deliveryActions]}>
-            <Text style={styles.sectionTitle}>Delivery Actions</Text>
-            <Button
-              title="Mark as Delivered"
-              onPress={() => handleStatusChange("delivered")}
-              buttonStyle={[
-                styles.updateButton,
-                { backgroundColor: "#34C759" },
-              ]}
-              containerStyle={{ marginBottom: 10 }}
-            />
-            <Button
-              title="Send WhatsApp Link & Bill"
-              onPress={() => Alert.alert("Action", "Sending WhatsApp link...")}
-              type="outline"
-              buttonStyle={{ borderColor: "#25D366" }}
-              titleStyle={{ color: "#25D366" }}
-            />
-          </View>
-        )}
 
         <View style={{ height: 50 }} />
       </ScrollView>
@@ -688,6 +881,7 @@ const styles = StyleSheet.create({
     color: "#333",
     flex: 1,
     marginLeft: 10,
+    marginBottom: 8,
   },
   sectionSubtitle: {
     fontSize: 14,
@@ -762,7 +956,7 @@ const styles = StyleSheet.create({
   },
   measurementInput: {
     flex: 1,
-    height: 35,
+    height: 40,
     borderWidth: 1,
     borderColor: "#DDD",
     borderRadius: 5,

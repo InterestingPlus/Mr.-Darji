@@ -1,0 +1,275 @@
+$primary: #1e293b; // Slate Blue (Banking feel)
+$secondary: #64748b;
+$success: #10b981;
+$danger: #ef4444;
+$bg-light: #f8fafc;
+$border-color: #e2e8f0;
+
+.invoice-wrapper {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 15px;
+
+  // Buttons bar
+  .action-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .btn-download {
+      background: $primary;
+      color: white;
+    }
+    .btn-share {
+      background: white;
+      border: 1px solid $border-color;
+      color: $primary;
+    }
+  }
+}
+
+.invoice-card {
+  background: white;
+  padding: 40px;
+  border-radius: 4px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid $primary;
+    padding-bottom: 20px;
+
+    .shop-brand {
+      display: flex;
+      gap: 15px;
+      .logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+      }
+      .shop-details {
+        h1 {
+          font-size: 20px;
+          color: $primary;
+          margin-bottom: 4px;
+        }
+        p {
+          font-size: 12px;
+          color: $secondary;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-bottom: 2px;
+        }
+        .gst {
+          font-weight: 700;
+          color: $primary;
+          margin-top: 5px;
+        }
+      }
+    }
+
+    .invoice-label {
+      text-align: right;
+      h2 {
+        font-size: 28px;
+        letter-spacing: 2px;
+        color: $primary;
+        margin-bottom: 10px;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        &.paid {
+          background: #dcfce7;
+          color: $success;
+        }
+        &.unpaid {
+          background: #fee2e2;
+          color: $danger;
+        }
+      }
+    }
+  }
+
+  .bill-meta {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 0;
+    border-bottom: 1px dashed $border-color;
+
+    label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: $secondary;
+      display: block;
+    }
+    .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: $primary;
+      margin-bottom: 10px;
+    }
+    .text-right {
+      text-align: right;
+    }
+  }
+
+  .customer-box {
+    padding: 25px 0;
+    h3 {
+      font-size: 12px;
+      color: $secondary;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cust-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: $primary;
+    }
+    p {
+      font-size: 14px;
+      color: $secondary;
+      margin-top: 2px;
+    }
+  }
+
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+
+    th {
+      background: $bg-light;
+      text-align: left;
+      padding: 12px;
+      font-size: 12px;
+      color: $primary;
+      text-transform: uppercase;
+      border-bottom: 1px solid $border-color;
+    }
+    td {
+      padding: 15px 12px;
+      font-size: 14px;
+      border-bottom: 1px solid $bg-light;
+    }
+    .text-right {
+      text-align: right;
+    }
+  }
+
+  .invoice-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+
+    .notes {
+      width: 50%;
+      font-size: 12px;
+      color: $secondary;
+      .note-title {
+        font-weight: 700;
+        color: $primary;
+        margin-bottom: 5px;
+      }
+    }
+
+    .summary-table {
+      width: 40%;
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: $secondary;
+        .text-red {
+          color: $danger;
+        }
+      }
+      .grand-total {
+        border-top: 2px solid $primary;
+        margin-top: 10px;
+        padding-top: 10px;
+        font-weight: 800;
+        font-size: 18px;
+        color: $primary;
+      }
+    }
+  }
+
+  .footer-bottom {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 11px;
+    color: $secondary;
+    border-top: 1px solid $border-color;
+    padding-top: 15px;
+  }
+}
+
+// 🖨️ Print Styles
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .invoice-wrapper {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .invoice-card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+// 📱 Mobile Friendly
+@media (max-width: 600px) {
+  .invoice-card {
+    padding: 20px;
+  }
+  .invoice-header {
+    flex-direction: column;
+    gap: 20px;
+    .invoice-label {
+      text-align: left;
+    }
+  }
+  .invoice-footer {
+    flex-direction: column-reverse;
+    gap: 30px;
+    .notes,
+    .summary-table {
+      width: 100%;
+    }
+  }
+  .table-responsive {
+    overflow-x: auto;
+  }
+}

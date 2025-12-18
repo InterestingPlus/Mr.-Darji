@@ -1,10 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import SettingsScreen from "../screens/SettingsScreen";
-import ServicesListScreen from "../screens/ServicesListScreen";
-import AddEditServiceScreen from "../screens/AddEditServiceScreen";
-import ServiceDetailViewScreen from "../screens/ServiceDetailsScreen";
-import ShopProfileScreen from "../screens/ShopProfileScreen";
-import EditShopProfileScreen from "../screens/EditShopProfileScreen";
+import SettingsScreen from "../screens/settings/SettingsScreen";
+import ServicesListScreen from "../screens/settings/profile/ServicesListScreen";
+import AddEditServiceScreen from "../screens/settings/profile/AddEditServiceScreen";
+import ServiceDetailViewScreen from "../screens/settings/profile/ServiceDetailsScreen";
+import ShopProfileScreen from "../screens/settings/profile/ShopProfileScreen";
+import EditShopProfileScreen from "../screens/settings/profile/EditShopProfileScreen";
 
 const Stack = createNativeStackNavigator();
 

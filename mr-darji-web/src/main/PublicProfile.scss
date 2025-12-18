@@ -1,0 +1,602 @@
+$primary: #5083ff;
+$green: #2ecc71;
+$bg: #f9f9f9;
+$text: #333;
+$border: #eee;
+
+.profile-container {
+  font-family: "Inter", sans-serif;
+  background: $bg;
+  min-height: 100vh;
+  padding-bottom: 50px;
+
+  .profile-header {
+    background: white;
+    .cover-image {
+      height: 250px;
+      overflow: hidden;
+      img {
+        width: 100%;
+        h: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        background: #000;
+      }
+    }
+    .header-content {
+      display: flex;
+      align-items: flex-end;
+      padding: 0 5%;
+      margin-top: -60px;
+      gap: 20px;
+
+      .logo-box {
+        width: 120px;
+        height: 120px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        padding: 5px;
+        img {
+          width: 100%;
+          border-radius: 12px;
+        }
+      }
+
+      .shop-info {
+        padding-bottom: 10px;
+        h1 {
+          margin: 0;
+          font-size: 28px;
+        }
+        .verified-icon {
+          color: $primary;
+          margin-left: 8px;
+        }
+        .meta-info {
+          color: #666;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: 5px;
+        }
+        .star-icon {
+          color: orange;
+          fill: orange;
+          width: 16px;
+        }
+      }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    padding: 30px 5%;
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s;
+      &.btn-call {
+        background: $primary;
+        color: white;
+      }
+      &.btn-whatsapp {
+        background: $green;
+        color: white;
+      }
+      &.btn-outline {
+        background: white;
+        border: 1px solid #ddd;
+        color: $text;
+      }
+      &:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .profile-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    padding: 0 5%;
+    gap: 30px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid $border;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+// Service Card Styling
+.service-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid $border;
+  .image-container {
+    height: 180px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .content {
+    padding: 15px;
+    .row {
+      display: flex;
+      justify-content: space-between;
+      h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .price {
+        color: $primary;
+        font-weight: bold;
+      }
+    }
+    .meta {
+      display: flex;
+      gap: 15px;
+      font-size: 14px;
+      color: #777;
+      margin: 10px 0;
+      .star-fill {
+        color: orange;
+        fill: orange;
+      }
+    }
+    .enquire-btn {
+      display: flex;
+      width: 100%;
+      padding: 10px;
+      background: #f8f9fa;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #444;
+      font-weight: bold;
+      &:hover {
+        color: $green;
+        border-color: $green;
+      }
+    }
+  }
+}
+
+// Chatbot Styling
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  .chat-toggle {
+    width: 65px;
+    height: 65px;
+    background: $primary;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 10px 30px rgba(80, 131, 255, 0.4);
+    cursor: pointer;
+  }
+  .chat-window {
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .chat-header {
+      background: $primary;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+    .chat-body {
+      flex: 1;
+      padding: 15px;
+      background: #f5f7fb;
+      .msg {
+        padding: 10px;
+        background: white;
+        border-radius: 10px;
+        max-width: 80%;
+        font-size: 14px;
+      }
+    }
+    .chat-footer {
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+      input {
+        flex: 1;
+        border: none;
+        background: #eee;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      button {
+        background: $primary;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+      }
+    }
+  }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+}
+
+// Variables
+$primary: #5083ff;
+$green: #2ecc71;
+$bg: #f4f7fe;
+$white: #ffffff;
+$text-dark: #1a1a1a;
+$text-muted: #666;
+$shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: $bg;
+  color: $text-dark;
+}
+
+.profile-container {
+  max-width: 100%;
+  margin: 0 auto;
+
+  // Header Section
+  .profile-header {
+    background: $white;
+    position: relative;
+    padding-bottom: 20px;
+
+    .cover-image {
+      height: 160px;
+      width: 100%;
+      background: #222;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.7;
+      }
+    }
+
+    .header-content {
+      padding: 0 20px;
+      margin-top: -50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center; // Mobile: Center aligned
+      text-align: center;
+
+      .logo-box {
+        width: 100px;
+        height: 100px;
+        background: $white;
+        border-radius: 20px;
+        box-shadow: $shadow;
+        padding: 4px;
+        z-index: 2;
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 16px;
+          object-fit: cover;
+        }
+      }
+
+      .shop-info {
+        margin-top: 15px;
+
+        // 💡 Verified Badge Fix
+        .title-row {
+          display: inline-flex; // Badge naam ke saath rahega
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+
+          h1 {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.2;
+          }
+          .verified-icon {
+            color: $primary;
+            flex-shrink: 0;
+          }
+        }
+
+        .tagline {
+          color: $text-muted;
+          font-size: 14px;
+          margin-top: 4px;
+        }
+
+        .meta-info {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          margin-top: 8px;
+          font-size: 13px;
+          color: $text-muted;
+          .star-icon {
+            color: #f1c40f;
+            fill: #f1c40f;
+          }
+        }
+      }
+    }
+  }
+
+  // Action Buttons (Sticky for Mobile)
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    background: $white;
+    border-bottom: 1px solid #eee;
+
+    .btn {
+      flex: 1;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+      transition: transform 0.2s;
+
+      &.btn-call {
+        background: $primary;
+        color: $white;
+      }
+      &.btn-whatsapp {
+        background: $green;
+        color: $white;
+      }
+      &.btn-outline {
+        background: $white;
+        border: 1.5px solid #ddd;
+        color: $text-dark;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+
+  // Main Content
+  .profile-main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      span {
+        font-size: 12px;
+        background: #ddd;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+    }
+
+    .card {
+      background: $white;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    // Services
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr; // Mobile: 1 column
+      gap: 15px;
+    }
+
+    // Gallery
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); // Mobile: 2 columns
+      gap: 10px;
+      img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+    }
+  }
+}
+
+// --- DESKTOP ADAPTATION (Larger Screens) ---
+@media (min-width: 768px) {
+  .profile-container {
+    .profile-header {
+      .cover-image {
+        height: 300px;
+      }
+      .header-content {
+        flex-direction: row;
+        align-items: flex-end;
+        text-align: left;
+        padding: 0 10%;
+        margin-top: -60px;
+
+        .shop-info {
+          margin-top: 0;
+          padding-bottom: 10px;
+          .title-row {
+            justify-content: flex-start;
+            h1 {
+              font-size: 32px;
+            }
+          }
+          .meta-info {
+            justify-content: flex-start;
+          }
+        }
+      }
+    }
+
+    .action-buttons {
+      padding: 20px 10%;
+      .btn {
+        max-width: 200px;
+      }
+    }
+
+    .profile-main {
+      padding: 40px 10%;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: start;
+
+      .services-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  }
+}
+
+.service-card-v2 {
+  background: $white;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+
+  .img-wrap {
+    height: 180px;
+    position: relative;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .price-tag {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  .card-body {
+    padding: 15px;
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: $text-muted;
+      margin-bottom: 15px;
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-weight: 600;
+        color: #333;
+      }
+      .dot {
+        color: #ccc;
+      }
+    }
+    .wa-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #f0fdf4;
+      color: $green;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid #dcfce7;
+      &:hover {
+        background: $green;
+        color: white;
+      }
+    }
+  }
+}
