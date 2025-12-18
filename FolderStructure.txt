@@ -1,0 +1,67 @@
+mr-darji/
+ ├── app/
+ │    ├── navigation/
+ │    │     ├── AppNavigator.jsx
+ │    │     ├── MainTabs.jsx
+ │    │     ├── AuthStack.jsx
+ │    │     └── index.js
+ │    │
+ │    ├── screens/
+ │    │     ├── auth/
+ │    │     │      ├── LoginScreen.jsx
+ │    │     │      └── SignupScreen.jsx
+ │    │     │
+ │    │     ├── home/
+ │    │     │      └── DashboardScreen.jsx
+ │    │     │
+ │    │     ├── orders/
+ │    │     │      ├── OrdersListScreen.jsx
+ │    │     │      └── OrderDetailsScreen.jsx
+ │    │     │
+ │    │     ├── customers/
+ │    │     │      ├── CustomersListScreen.jsx
+ │    │     │      └── AddCustomerScreen.jsx
+ │    │     │
+ │    │     ├── measurements/
+ │    │     │      └── MeasurementScreen.jsx
+ │    │     │
+ │    │     ├── staff/
+ │    │     │      └── StaffScreen.jsx
+ │    │     │
+ │    │     ├── reports/
+ │    │     │      └── ReportsScreen.jsx
+ │    │     │
+ │    │     └── settings/
+ │    │            └── SettingsScreen.jsx
+ │    │
+ │    ├── components/
+ │    │     ├── ButtonPrimary.jsx
+ │    │     ├── InputField.jsx
+ │    │     ├── Card.jsx
+ │    │     └── StatusBadge.jsx
+ │    │
+ │    ├── config/
+ │    │     └── theme.js
+ │    │
+ │    ├── utils/
+ │    │     ├── api.js
+ │    │     ├── validators.js
+ │    │     └── helpers.js
+ │    │
+ │    ├── hooks/
+ │    │     └── useAuth.js
+ │    │
+ │    └── services/
+ │          ├── authService.js
+ │          ├── orderService.js
+ │          ├── customerService.js
+ │          └── notificationService.js
+ │
+ ├── assets/
+ │     ├── fonts/
+ │     ├── images/
+ │     └── icons/
+ │
+ ├── App.js
+ ├── package.json
+ └── README.md

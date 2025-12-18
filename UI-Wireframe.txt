@@ -1,0 +1,998 @@
+UI Wireframe Breakdown (Text-Based Blueprint)
+
+
+*Mr. Darji*
+Tailor shops commonly use manual and paper-based methods for managing customer measurements, work orders, delivery dates, and staff assignments. These old methods often lead to lost records, incorrect measurements, missed deadlines, and weak customer communication.
+This project aims to create a modern web-based solution that simplifies and automates the overall tailoring workflow.
+
+System Features
+1 Customer & Measurement Module
+- Customer profile with name, contact, and address
+ - Store multiple measurement sets (shirt, pant, kurta, blouse, coat)
+ - Update measurements anytime
+ - View past measurement history
+ - Quick “repeat order” option using existing measurements
+
+2 Order Management Module
+ - Create new orders with item details
+ - Add delivery date and expected completion time
+ - Real-time order status:
+  Received,
+  Cutting,
+  Stitching,
+  Finishing,
+  Ready for Pickup,
+  Delivered,
+ - Attach photos, notes, and cloth details
+ - Partial payment support (cash/online)
+ - Automatically generate printable invoice
+
+3 Notification & Reminder Module
+ - Whatsapp message for new order confirmation
+ - Whatsapp message when order is ready
+ - Reminder message for delivery date
+ - Pending payment reminder
+ - Automatic delay alert if the delivery date is exceeded
+ - WhatsApp bill sending (PDF/Message format)
+
+4 Staff Management Module
+ - Add staff members (cutting master, sewing master, iron/finishing)
+ - Assign orders to staff
+ - Track progress by worker
+ - Worker performance and productivity report
+
+5 Reports & Analytics
+ - Monthly sales report
+ - Order completion statistics
+ - Most sold items (shirt/pant/kurta/blouse)
+ - Delivery accuracy (on-time vs delayed)
+ - Pending payments summary
+ - Customer history report
+ - Staff productivity analytics
+
+
+
+UI Screens Suggestions :
+ 
+
+0) Login / Signup Page
+
+1) Main Dashboard (Home Screen)
+Header:
+ - App Logo (Mr. Darji ka minimalist symbol)
+ - User Profile icon
+ - Settings icon (3-dot menu)
+
+Body Sections:
+
+A) Quick Actions (Top Row Cards)
+ - "New Measurement"
+ - "New Customer"
+ - "Order Status"
+ - "Past Records"
+
+B) Ongoing Orders (Scrollable List)
+Item layout:
+ - Customer Name
+ - Work Type (Shirt, Pent, Blazer, etc.)
+ - Delivery Date
+ - Status Indicator (Pending, In Progress, Ready)
+
+C) Today’s Tasks
+ - Measurements due
+ - Deliveries due
+ - Alteration reminders
+
+2) Add Customer Screen
+Form Fields:
+ - Name
+ - Mobile
+ - Address
+ - Notes (extra instructions)
+ 
+Buttons:
+ - Save Customer
+ - Save & Add Measurement (shortcut)
+
+
+3) Measurement Entry Screen
+Top:
+ - Customer Name
+Categories:
+ 1. Shirt
+ 2. Pant
+ 3. Traditional
+ 4. Other (bags etc.)
+ 5. Repair
+Inside each Category:
+ - Default fields
+ - Add Field (+)
+Bottom:
+ - Save
+ - Save as Template
+ - Save & Create Order
+
+
+4) Order Creation Screen
+Fields:
+ - Select Outfit Type
+ - Fabric (if provided by customer)
+ - Stitch Type (normal, premium, designer)
+ - Urgency (Normal / Express)
+ - Delivery Date Picker
+ - Extra Notes
+
+Bottom:
+ - Create Order
+
+5) Order Details Screen
+
+Top: Order ID + Customer Name
+
+Sections:
+ - Measurement Summary
+ - Order Info
+ - Status (Timeline: Received -> Cutting -> Stitching -> Ready -> Delivered)
+ - Attach Images (fabric, reference design)
+ - Payment Status
+
+6) Customer Profile
+ - Photo
+ - Name
+ - Mobile
+ - Order History
+ - Last Measurements
+ - Notes
+ - Button: View All Measurements
+
+7) Settings
+ - Theme (light/dark/system)
+ - Language
+
+
+*Wireframe Style Guidelines*
+ - Rounded corners, not toothpaste-level, just neat.
+ - Clear spacing, no suffocating UI.
+ - Cards > separators.
+ - Use icons only where they reduce cognitive load.
+ - Keep everything reachable with thumb (mobile-first).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ * =================== Services ================= *
+ # 📦 SERVICES MODULE – COMPLETE STRUCTURE (Tailor Management System)
+
+## 1️⃣ Services List Screen (Main Page)
+
+### Purpose
+Shop owner apni saari services dekh sake, edit kar sake, aur nayi add kar sake.
+
+### UI Layout
+
+* Header:
+
+  * Title: **“Services”**
+  * Subtitle: “Your stitching services & pricing”
+  * Primary CTA: **+ Add Service**
+
+* Service Card (per service):
+
+  * Service Image (thumbnail) || Aagar na ho to Default Dikkhni chahiye.
+  * Service Name
+  * Price (₹)
+  * Estimated Days
+  * Short Description (1–2 lines)
+  * Actions:
+
+    * Edit
+    * View Details
+
+### Empty State
+
+When no services:
+
+* Illustration
+* Text:
+
+  > “No services added yet”
+  > “Add your first service to start taking orders”
+* Button: **Add Service**
+
+---
+
+## 2️⃣ Add / Edit Service Screen
+
+> Same screen for add & edit. Edit mode me data prefilled.
+
+### 🧱 Basic Info Section (Mandatory)
+
+* **Service Name**
+  Example: Shirt Stitching, Blouse Stitching
+
+  * Required
+  * Max 80 chars
+
+* **Base Price (₹)**
+
+  * Numeric
+  * Required
+
+* **Estimated Delivery Time**
+
+  * Number input
+  * Unit: Days
+  * Required
+
+---
+
+### 📝 Description Section
+
+* **Service Description**
+
+  * Multiline text
+  * Optional but strongly recommended
+  * Placeholder:
+
+    > “Describe fabric type, style, fitting, or special notes”
+
+(Ye description public profile + Google indexing me kaam aayega later, so keep it.)
+
+---
+
+### 📸 Images Section
+
+* Upload Service Images
+
+  * Max: 3–5 images
+  * Supported: JPG / PNG
+  * Drag & drop or upload button
+
+* Guidelines text:
+
+  > “Clear images increase customer trust”
+
+(Images optional, but UI me importance dikhao.)
+
+---
+
+
+### 💾 Action Buttons
+
+* Primary: **Save Service**
+* Secondary: Cancel
+
+Validation:
+
+* Name, Price, Days mandatory
+
+---
+
+## 3️⃣ Service Detail View (Read-only)
+
+### Shown when user clicks “View”
+
+* Service Image Gallery
+* Name
+* Price
+* Estimated Days
+* Full Description
+* Created date / Updated date
+* Button: Edit Service
+
+---
+
+## 4️⃣ Data Mapping (Backend Friendly)
+
+### Service Object
+
+```json
+{
+  "service_id": "uuid",
+  "shop_id": "uuid",
+  "name": "Shirt Stitching",
+  "description": "Premium shirt stitching with proper fitting",
+  "price": 450,
+  "estimated_days": 3,
+  "images": ["url1", "url2"],
+  "created_at": "",
+  "updated_at": ""
+}
+```
+
+---
+
+## 5️⃣ UX Micro-Details (Ye choti cheeze product ko mature banati hain)
+
+* After saving service:
+
+  * Toast: “Service added successfully”
+* First service added:
+
+  * Prompt:
+
+    > “Great! Now add a customer to create your first order”
+* Services count shown in Shop Profile summary
+
+---
+
+
+---
+
+## 7️⃣ Gemini Prompt (Ready-to-use)
+
+> “Create a full mobile app screen component for a tailoring app’s Services module based on this structure:
+> [paste everything above]
+> Use modern UI, clean layout, card-based service list, and form-based add/edit service screen.”
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Isme please Social Links ka bhi add karo!
+aur jo verification ka bola tha (kyc ka... toh jisne kyc verification karva rakha hoga, usko blue tick de denge! aur uski hi profile google search me add hogi)
+
+ * ======================= SHOP PROFIle ======================*
+# ⭐ ADVANCED SHOP PROFILE PAGE (COMPLETE STRUCTURE)
+
+## 1) Shop Header Section (Brand Identity)
+
+**UI Type: Cover header + profile card**
+
+**Fields:**
+
+* Shop Logo (PNG/SVG)
+* Shop Name
+* Owner Name
+* Shop Type (Tailor, Boutique, Fashion Designer, Men’s/Women’s Tailor etc.)
+* Tagline (optional, like: “Perfect Fit, Perfect Look”)
+* Shop Rating (auto-calculated from completed orders)
+
+**Extras:**
+
+* "Member Since: 2025"
+* "Verified Shop" badge (if KYC/phone verified)
+
+**Why:** Branding + trust.
+
+---
+
+## 2) Contact & Location Details
+
+**UI Type: contact card**
+
+* Mobile Number 
+* Alternate Number
+* (with call action button)
+* WhatsApp Quick-Link (wa.me/...)
+* Full Address
+* Google Maps Location / Geo Tag
+* Working Hours:
+
+  * Monday to Sunday: Opening/Closing time
+  * Auto indicator: Open Now / Closed
+  
+
+## 3) Shop Overview & Description
+
+**UI Type: bio section**
+
+* Short Description
+* Services Offered:
+
+  * Custom Stitching
+  * Alteration
+  * Bridal Wear
+  * Men’s Wear
+  * Blouse Design
+  * Kids Wear etc.
+* Experience (years in business)
+
+* Portfolio Mini-Slider
+
+  * Upload stitch sample photos
+  * Design inspirations
+  * Before/After alterations
+
+---
+
+## 4) Shop Performance Snapshot (Mini Analytics)
+
+**UI Type: mini cards grid**
+
+* Total Orders Completed
+* On-time Delivery Rate
+* Customer Retention Rate
+* Average Order Value
+* Best Selling Item
+* Staff Count
+
+**Optional Premium:**
+
+* Monthly Performance Graph (tiny sparkline)
+* “This Year vs Last Year” comparison
+
+---
+
+## 5) Staff Directory (Team Members)
+
+**UI Type: list / grid**
+
+Each Staff Card:
+
+* Profile photo
+* Name
+* Role (Cutting Master, Stitching Master etc.)
+* Active Orders Assigned
+* Completed Orders
+* Performance Indicator (green/yellow/red)
+
+**Optional Premium:**
+
+* Tap to view staff profile (stats, history, mistakes, expertise)
+
+---
+
+## 6) Pricing & Catalog (If shop wants to show rates)
+
+**UI Type: accordion/table**
+
+* Shirt Stitching Price
+* Pant Stitching Price
+* Blouse Price
+* Kurta Price
+* Alteration Charges
+* Custom Design Charges
+
+**Extra Features:**
+
+* Seasonal Offers
+* Discount Codes (darji bhai manually create kar sake)
+
+---
+
+## 7) Customer Reviews (Optional, but solid feature)
+
+**UI Type: carousel or list**
+
+* Rating
+* Review text
+* Customer name
+* Item stitched
+* "Order again" quick button
+
+**Optional Premium:**
+
+* AI summarised review highlights:
+
+  * “Fitting praised 12 times”
+  * “Delivery delay mentioned 3 times”
+
+---
+
+## 8) Shop Documents (Backend, for owner eyes only)
+
+**UI Type: list of downloadable items**
+
+* Shop GST No (if any)
+* Owner KYC
+* Business License
+* UPI ID QR Code
+* Bank Details
+
+**Why:** Trust + record keeping.
+
+---
+ 
+
+## 9) Shop Gallery & Work Samples
+
+**UI Type: image grid**
+
+* Stitch samples
+* Latest orders
+* Custom designs
+* Premium designs showcase
+  
+
+# ⭐ FINAL UI LAYOUT (TOP TO BOTTOM)
+
+```
+[ Header + Cover ]
+[ Contact & Location ]
+[ Shop Overview ]
+[ Mini Analytics Snapshot ]
+[ Staff Directory ]
+[ Pricing & Catalog ]
+[ Gallery ]
+[ Reviews ]
+[ Shop Documents ]
+```
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
+
+🧵 SHOP PROFILE – MONGODB SCHEMA (FINAL)
+
+Collection name: shops
+
+🧩 1. Basic Identity & Ownership
+{
+  _id: ObjectId,
+
+  shopCode: String, // unique short code (MRD-RAJ-0001)  (Not Editable, last me 4 digit me count aaye ki ye shop ke pehle 10 shops registerd hai, toh MRD-RAJ-0011 dikhayenge!)
+
+  owner_id: ObjectId, // reference to Users collection
+
+  name: String, // "Ramesh Tailors"
+  slug: String, // "ramesh-tailors" (SEO + public URL) / Automatic + Not Editable Onces Created 
+
+  shopType: {
+    type: String,
+    enum: [
+      "Tailor",
+      "Boutique",
+      "Fashion Designer",
+      "Men Tailor",
+      "Women Tailor",
+      "Unisex"
+    ]
+  },
+
+  tagline: String,
+
+
+👉 Slug is mandatory for Google indexing.
+👉 shopCode internal ke liye gold hai.
+
+🧩 2. Branding & Media
+  logo: {
+    url: String,
+    publicId: String
+  },
+
+  coverImage: {
+    url: String,
+    publicId: String
+  },
+
+  gallery: [
+    {
+      url: String,
+      publicId: String,
+      type: { type: String, enum: ["work", "design", "before_after"] }
+    }
+  ],
+
+🧩 3. Contact & Location
+  contact: {
+    phone: String,
+    alternatePhone: String,
+    whatsappNumber: String,
+
+    googleMap: String  (for Ifram view)
+
+    address: {
+      line1: String,
+      area: String,
+      city: String,
+      state: String,
+      country: String,
+      pincode: String
+    },
+    
+    workingHours: {
+      monday: { open: String, close: String },
+      tuesday: { open: String, close: String },
+      wednesday: { open: String, close: String },
+      thursday: { open: String, close: String },
+      friday: { open: String, close: String },
+      saturday: { open: String, close: String },
+      sunday: { open: String, close: String }
+    }
+  },
+
+🧩 4. Social & Online Presence (SEO Fuel)
+  socialLinks: {
+    instagram: String,
+    facebook: String,
+    googleBusiness: String,
+    website: String
+  },
+
+🧩 5. About & Speciality
+  about: {
+    description: String,
+    experienceYears: Number,
+
+    specialities: [
+      "Shirt Stitching",
+      "Pant Stitching",
+      "Blouse Design",
+      "Bridal Wear"
+    ]
+  },
+  
+🧩 6. Verification & Trust Layer (Very Important)
+  verification: {
+    phoneVerified: { type: Boolean, default: false },
+
+    kycStatus: {
+      type: String,
+      enum: ["not_applied", "pending", "verified", "rejected"],
+      default: "not_applied"
+    },
+
+    verifiedAt: Date,
+
+    documents: {
+      ownerIdProof: String,
+      shopLicense: String,
+      gstNumber: String
+    }
+  },
+
+👉 Blue Tick = kycStatus === "verified" 
+
+🧩 7. Meta & System Fields
+  memberSince: Date,
+
+  createdAt: Date,
+  updatedAt: Date
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# 🧱 HOME DASHBOARD – WIREFRAME (STRUCTURE + UX)
+
+---
+
+## 🟦 SCREEN ROOT
+
+**Screen Type:** Scrollable Dashboard
+**Scroll:** Vertical only
+**Background:** Light gray / off-white
+**Padding:** 16px
+
+---
+
+## 1️⃣ APP HEADER (Top Fixed Section)
+
+**Layout:** Horizontal row
+
+```
+[ Shop Logo ]   Good Morning, Ramesh 👋
+                Ramesh Tailors
+```
+
+**Right side icons:**
+
+```
+🔔 Notifications     ⚙️ Settings
+```
+
+**UX Notes**
+
+* Greeting optional, shop name mandatory
+* Notification icon shows red dot if pending alerts
+* No clutter here
+
+---
+
+## 2️⃣ PRIMARY ACTION ZONE (MOST IMPORTANT)
+
+**Layout:** 2-card grid (50% width each)
+
+```
+┌─────────────────┐   ┌─────────────────┐
+│  ➕ New Order    │   │  👤 Add Customer │
+│  Create Order   │   │  Register Client │
+└─────────────────┘   └─────────────────┘
+```
+
+**Design**
+
+* Height: Large
+* Solid background color
+* High contrast text
+* Tap area big enough for tired fingers
+
+**UX Rule**
+
+> These two actions must be visible without scrolling.
+
+---
+
+## 3️⃣ TODAY SNAPSHOT (Quick Stats)
+
+**Section Title:**
+**“Today at a Glance”**
+
+**Layout:** 2×2 stat cards
+
+```
+[ Orders Today ]     [ Pending Orders ]
+[ Delivered ]        [ Due Amount ]
+```
+
+**Each Card Contains**
+
+* Big number
+* Small label
+* Optional icon
+
+**Example**
+
+```
+12
+Orders Today
+```
+
+**UX**
+
+* Numbers update live
+* No graphs here. Only facts.
+
+---
+
+## 4️⃣ QUICK NAVIGATION SHORTCUTS
+
+**Section Title:**
+**“Quick Access”**
+
+**Layout:** Grid (3 columns × 2 rows)
+
+```
+📦 Orders        👥 Customers     📏 Measurements
+📊 Reports       🖼 Gallery       🏬 Shop Profile
+```
+
+**Card Style**
+
+* Square cards
+* Icon on top
+* Label below
+* Equal spacing
+
+**UX Rule**
+
+> If a feature exists in the app, it must be reachable from here.
+
+---
+
+## 5️⃣ BUSINESS OVERVIEW (Mini Analytics Preview)
+
+**Section Title:**
+**“Business Overview”**
+
+**Card Layout**
+
+```
+┌────────────────────────────┐
+│  Orders - Last 7 Days       │
+│  [ Simple Line / Bar Chart ]│
+│                            │
+│  View Detailed Analytics →  │
+└────────────────────────────┘
+```
+
+**UX**
+
+* Chart is non-interactive
+* Tap anywhere → Analytics tab
+* Purpose is curiosity, not analysis
+
+---
+
+## 6️⃣ IMPORTANT REMINDERS & ALERTS
+
+**Section Title:**
+**“Action Required”**
+
+**List Style Cards**
+
+```
+⚠️  3 orders scheduled for delivery tomorrow
+💰  2 payments pending
+📏  Measurements missing for 1 order
+```
+
+**UX**
+
+* Shown only if something exists
+* Highest priority alert on top
+* Tap → relevant screen
+
+---
+
+## 7️⃣ RECENT ACTIVITY
+
+**Section Title:**
+**“Recent Activity”**
+
+**Simple vertical list**
+
+```
+• Order #124 created
+• Payment of ₹1200 received
+• Customer Anil updated
+```
+
+**UX**
+
+* Max last 5 activities
+* Read-only
+* Reassures progress
+
+---
+
+## 8️⃣ FOOTER SPACING
+
+Extra space so last card doesn’t feel crushed by bottom tabs.
+
+---
+
+# 🧠 UX PRINCIPLES USED (Quietly, but ruthlessly)
+
+* **Zero thinking**: Everything is obvious
+* **One-hand use**: Big tap areas
+* **No dead ends**: Every section leads somewhere
+* **Progress visibility**: Numbers + activity
+* **Home ≠ decoration**: Home = control panel
+
+---
+
+# 📐 FINAL FLOW SUMMARY
+
+```
+Header
+↓
+Primary Actions (New Order / Add Customer)
+↓
+Today Snapshot
+↓
+Quick Access Grid
+↓
+Mini Analytics Preview
+↓
+Alerts & Reminders
+↓
+Recent Activity
+```
+
+---
+
+## Final Note (Grudging Respect Moment)
+
+This Home screen will do something rare.
+It will make users **not hate** opening the app. That’s already a win.
+
+If you want next:
+
+* Exact **React Native layout skeleton**
+* Or **component breakup + naming**
+* Or **empty state UX** (very important but boring)
+ 
