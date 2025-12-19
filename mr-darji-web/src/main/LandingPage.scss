@@ -40,117 +40,152 @@ $slate-light: #94a3b8;
 
   // 1. HERO
   .hero {
-    display: flex;
-    min-height: 90vh;
     background: linear-gradient(135deg, $primary-indigo 0%, #312e81 100%);
     color: $white;
     overflow: hidden;
     position: relative;
     z-index: 9;
+    width: 100%;
 
-    .hero-content {
-      flex: 1;
-      padding: 80px 40px 80px 100px;
+    @media (min-width: 1024px) {
       display: flex;
-      flex-direction: column;
       justify-content: center;
-
-      .brand-logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 32px;
-
-        .icon-box {
-          background: rgba(255, 255, 255, 0.1);
-          padding: 8px;
-          border-radius: 12px;
-          .icon-amber {
-            color: $accent-amber;
-          }
-        }
-        .brand-name {
-          font-size: 24px;
-          font-weight: 900;
-        }
-      }
-
-      .main-heading {
-        font-size: 56px;
-        font-weight: 800;
-        line-height: 1.1;
-        margin-bottom: 24px;
-        .text-highlight {
-          color: #818cf8;
-        }
-      }
-
-      .sub-text {
-        font-size: 18px;
-        color: $text-light;
-        max-width: 500px;
-        margin-bottom: 32px;
-      }
-
-      .value-bullets {
-        margin-bottom: 40px;
-        .bullet {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 12px;
-          color: $text-light;
-          svg {
-            color: $accent-amber;
-          }
-        }
-      }
-
-      .cta-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
     }
 
-    .hero-visual {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.2);
-      @include flex-center;
-      position: relative;
+    .max-width {
+      display: flex;
+      max-width: 1350px;
 
-      .mobile-mockup {
-        width: 280px;
-        height: 560px;
-        background: #0f172a;
-        border: 8px solid #1e293b;
-        border-radius: 40px;
-        overflow: hidden;
-        z-index: 2;
+      height: minmax(90vh, 740px);
 
-        .screen-content {
-          padding: 20px;
-          .skeleton-header {
-            height: 20px;
-            background: #334155;
-            margin-bottom: 20px;
-            border-radius: 4px;
-          }
-          .skeleton-card {
-            height: 80px;
-            background: #1e293b;
-            margin-bottom: 15px;
+      .hero-content {
+        flex: 1;
+        padding: 80px 40px 80px 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .brand-logo {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 32px;
+
+          .icon-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
             border-radius: 12px;
+            .icon-amber {
+              color: $accent-amber;
+            }
+          }
+          .brand-name {
+            font-size: 24px;
+            font-weight: 900;
           }
         }
+
+        .main-heading {
+          font-size: 56px;
+          font-weight: 800;
+          line-height: 1.1;
+          margin-bottom: 24px;
+
+          .text-highlight {
+            color: #818cf8;
+          }
+
+          @media (max-width: 1024px) {
+            font-size: 35px;
+          }
+        }
+
+        .sub-text {
+          font-size: 18px;
+          color: $text-light;
+          max-width: 500px;
+          margin-bottom: 32px;
+        }
+
+        .value-bullets {
+          margin-bottom: 40px;
+
+          .bullet {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: $text-light;
+            svg {
+              color: $accent-amber;
+            }
+          }
+
+          @media (max-width: 1024px) {
+            margin-bottom: 15px;
+          }
+        }
+
+        .cta-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
       }
-      .glow-effect {
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        background: $action-indigo;
-        filter: blur(100px);
-        opacity: 0.2;
+
+      .hero-visual {
+        flex: 1;
+        // background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0);
+        @include flex-center;
+        position: relative;
+
+        animation: float 3s ease-in-out infinite;
+        @keyframes float {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        .mobile-mockup {
+          width: 280px;
+          height: 560px;
+          background: #0f172a;
+          border: 8px solid #1e293b;
+          border-radius: 40px;
+          overflow: hidden;
+          z-index: 2;
+
+          .screen-content {
+            padding: 20px;
+            .skeleton-header {
+              height: 20px;
+              background: #334155;
+              margin-bottom: 20px;
+              border-radius: 4px;
+            }
+            .skeleton-card {
+              height: 80px;
+              background: #1e293b;
+              margin-bottom: 15px;
+              border-radius: 12px;
+            }
+          }
+        }
+        .glow-effect {
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          background: $action-indigo;
+          filter: blur(100px);
+          opacity: 0.2;
+        }
       }
     }
   }
@@ -226,12 +261,20 @@ $slate-light: #94a3b8;
         margin: 15px 0;
         color: $text-dark;
         font-weight: 800;
+
+        @media (max-width: 1024px) {
+          font-size: 28px;
+        }
       }
       p {
         color: #64748b;
         max-width: 600px;
         margin: 0 auto;
         font-size: 18px;
+
+        @media (max-width: 1024px) {
+          font-size: 15px;
+        }
       }
     }
 
@@ -296,6 +339,10 @@ $slate-light: #94a3b8;
     h3 {
       font-size: 42px;
       margin: 20px 0 60px;
+
+      @media (max-width: 1024px) {
+        font-size: 30px;
+      }
     }
 
     .grid-features {
@@ -880,18 +927,5 @@ $slate-light: #94a3b8;
     left: 45%;
 
     z-index: -1;
-
-    animation: float 3s ease-in-out infinite;
-    @keyframes float {
-      0% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-      100% {
-        transform: translateY(0);
-      }
-    }
   }
 }

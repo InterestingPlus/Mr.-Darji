@@ -14,6 +14,7 @@ import {
   Modal,
   FlatList,
   Dimensions,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // For beautiful gradients
 import axios from "axios";
@@ -21,7 +22,7 @@ import axios from "axios";
 import BASE_URL from "../../config";
 import { useContext } from "react";
 import { AuthContext } from "../../navigation/AppNavigator";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+// import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // --- Icon Component (Adapted from LoginScreen style) ---
 const CustomIcon = ({ name, color = "#4B5563", size = 20, style }) => {
@@ -155,17 +156,6 @@ export default function RegisterScreen({ navigation }) {
           shopType: form.shopType,
           addressLine1: form.shopAddress,
         },
-
-        // name,
-        // phone,
-        // password,
-        // shopName,
-        // language = "en",
-        // shopType = "Tailor",
-        // addressLine1 = "N/A",
-        // city = "N/A",
-        // state = "N/A",
-        // country = "N/A",
 
         {
           headers: {
@@ -318,10 +308,16 @@ export default function RegisterScreen({ navigation }) {
                 <View style={homeScreenStyles.brandContent}>
                   {/* Logo Icon */}
                   <View style={homeScreenStyles.logoContainer}>
-                    <MaterialCommunityIcons
+                    {/* <MaterialCommunityIcons
                       name="scissors-cutting"
                       size={50}
                       color="#FBBF24"
+                    /> */}
+
+                    {/* Custom Logo Image */}
+                    <Image
+                      source={require("../../../assets/Mr-Darji.png")}
+                      style={homeScreenStyles.logo}
                     />
                   </View>
 
@@ -506,6 +502,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#F3F4F6", // Light gray background for the entire screen
+    // paddingTop: 30,
   },
   container: {
     flex: 1,
@@ -535,6 +532,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#F3F4F6",
+
+    marginTop: 30,
   },
   backButton: {
     padding: 8,
@@ -721,6 +720,10 @@ const homeScreenStyles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 40,
     borderBottomRightRadius: 80, // Premium curve
+  },
+  logo: {
+    width: 70,
+    height: 70,
   },
   brandContent: {
     marginTop: 20,

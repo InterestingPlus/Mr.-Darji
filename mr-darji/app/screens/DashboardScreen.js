@@ -13,6 +13,10 @@ import { Icon, Avatar, Badge, Divider } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient"; // 👈 Import LinearGradient
 import Svg, { Path } from "react-native-svg";
 
+import BASE_URL from "../config";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const { width } = Dimensions.get("window");
 
 // --- DUMMY DATA (No Change) ---
@@ -37,23 +41,6 @@ const ListBulletsIcon = ({ color = "#111418", size = 24 }) => (
     <Path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z" />
   </Svg>
 );
-
-const todayStats = [
-  { label: "Orders Today", value: 12, icon: "today", color: "#007AFF" },
-  {
-    label: "Pending Orders",
-    value: 5,
-    icon: "hourglass-empty",
-    color: "#FF9500",
-  },
-  {
-    label: "Delivered",
-    value: 7,
-    icon: "check-circle-outline",
-    color: "#34C759",
-  },
-  { label: "Due Amount", value: "₹14,500", icon: "payments", color: "#FF3B30" },
-];
 
 const quickAccessItems = [
   {
@@ -335,6 +322,51 @@ export default function HomeDashboardScreen({ navigation }) {
     const calculatedWidth = (width - 2 * itemMargin - itemGap) / 2;
     return Math.max(calculatedWidth, 158);
   }, [width]);
+
+  const [todayStats, setTodayStats] = useState([
+    { label: "Orders Today", value: 12, icon: "today", color: "#007AFF" },
+    {
+      label: "Pending Orders",
+      value: 5,
+      icon: "hourglass-empty",
+      color: "#FF9500",
+    },
+    {
+      label: "Delivered",
+      value: 7,
+      icon: "check-circle-outline",
+      color: "#34C759",
+    },
+    {
+      label: "Due Amount",
+      value: "₹14,500",
+      icon: "payments",
+      color: "#FF3B30",
+    },
+  ]);
+
+  useEffect(() => {
+    const getTodayStats = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+
+        const response = await axios.get(`${BASE_URL}/api/analytics/today`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const apiData = response.data;
+
+        // setTodayStats();
+      } catch (error) {
+        console.error("Error fetching today's stats:", error);
+      }
+    };
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      getTodayStats();
+    });
+    return unsubscribe;
+  });
 
   const QUICK_ACTIONS = useMemo(
     () => [

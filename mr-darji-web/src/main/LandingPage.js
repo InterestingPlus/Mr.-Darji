@@ -27,6 +27,9 @@ import "./LandingPage.scss";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
+// Logo
+import logo from "../assets/Mr-Darji-.png";
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -74,57 +77,61 @@ const LandingPage = () => {
       <main className="landing-wrapper">
         {/* 1. HERO SECTION */}
         <section className="hero">
-          <div className="hero-content">
-            <div className="brand-logo">
-              <div className="icon-box">
-                <Scissors className="icon-amber" size={32} />
+          <div className="max-width">
+            <div className="hero-content">
+              <div className="brand-logo">
+                <div className="icon-box">
+                  {/* <Scissors className="icon-amber" size={32} /> */}
+
+                  <img src={logo} alt="Mr. Darji" style={{ width: 40 }} />
+                </div>
+                <span className="brand-name">Mr. Darji</span>
               </div>
-              <span className="brand-name">Mr. Darji</span>
+
+              <h1 className="main-heading">
+                Run Your Tailor Shop Like a{" "}
+                <span className="text-highlight">Modern Business</span>
+              </h1>
+              <p className="sub-text">
+                Manage customers, measurements, orders, staff, payments, and
+                reports — all in one simple app.
+              </p>
+
+              <div className="value-bullets">
+                <div className="bullet">
+                  <CheckCircle size={18} /> No more paper slips
+                </div>
+                <div className="bullet">
+                  <CheckCircle size={18} /> Automatic order tracking & Billing
+                </div>
+                <div className="bullet">
+                  <CheckCircle size={18} /> Smart performance reports
+                </div>
+              </div>
+
+              <div className="cta-group">
+                <button className="btn-primary">
+                  Download App <Smartphone size={18} />
+                </button>
+                <button
+                  className="btn-outline"
+                  onClick={() => navigate("/shops")}
+                >
+                  View Live Profiles
+                </button>
+              </div>
             </div>
 
-            <h1 className="main-heading">
-              Run Your Tailor Shop Like a{" "}
-              <span className="text-highlight">Modern Business</span>
-            </h1>
-            <p className="sub-text">
-              Manage customers, measurements, orders, staff, payments, and
-              reports — all in one simple app.
-            </p>
-
-            <div className="value-bullets">
-              <div className="bullet">
-                <CheckCircle size={18} /> No more paper slips
+            <div className="hero-visual">
+              <div className="mobile-mockup">
+                <div className="screen-content">
+                  <div className="skeleton-header" />
+                  <div className="skeleton-card" />
+                  <div className="skeleton-card" />
+                </div>
               </div>
-              <div className="bullet">
-                <CheckCircle size={18} /> Automatic order tracking
-              </div>
-              <div className="bullet">
-                <CheckCircle size={18} /> Smart performance reports
-              </div>
+              <div className="glow-effect" />
             </div>
-
-            <div className="cta-group">
-              <button className="btn-primary">
-                Download App <Smartphone size={18} />
-              </button>
-              <button
-                className="btn-outline"
-                onClick={() => navigate("/shops")}
-              >
-                View Live Profiles
-              </button>
-            </div>
-          </div>
-
-          <div className="hero-visual">
-            <div className="mobile-mockup">
-              <div className="screen-content">
-                <div className="skeleton-header" />
-                <div className="skeleton-card" />
-                <div className="skeleton-card" />
-              </div>
-            </div>
-            <div className="glow-effect" />
           </div>
         </section>
         {/* 2. TRUST STRIP */}
@@ -388,7 +395,8 @@ const LandingPage = () => {
               {/* Brand Info */}
               <div className="footer-col brand-info">
                 <div className="footer-logo">
-                  <Scissors className="logo-icon" size={28} />
+                  <img src={logo} alt="Mr. Darji" style={{ width: 40 }} />
+
                   <span>Mr. Darji</span>
                 </div>
                 <p className="footer-desc">
@@ -462,6 +470,17 @@ const LandingPage = () => {
               </p>
               <div className="footer-meta">
                 <span>Made with Precision in India</span>
+              </div>
+              <div className="footer-meta">
+                <span>
+                  Developed by{" "}
+                  <a
+                    href="https://jatinporiya.epizy.com"
+                    style={{ color: "#FBBF24" }}
+                  >
+                    Jatin Poriya
+                  </a>
+                </span>
               </div>
             </div>
           </div>
