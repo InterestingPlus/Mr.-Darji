@@ -13,6 +13,7 @@ import orderRoutes from "./routes/order.routes.js";
 import serviceRoutes from "./routes/services.routes.js";
 import measurementRoutes from "./routes/measurement.routes.js";
 import shopRoutes from "./routes/profile.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/measurement", measurementRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/profile", shopRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

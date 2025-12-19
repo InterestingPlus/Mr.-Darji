@@ -45,9 +45,9 @@ export default function AppNavigator() {
         setForceUpdate(true);
       } else if (compareVersions(current, config.latestVersion) < 0) {
         setSoftUpdate(true);
-      } else {
-        setForceUpdate(true);
       }
+
+      console.log(config, current, forceUpdate, softUpdate);
     } catch (err) {
       console.log("Version check failed", err);
 
@@ -55,6 +55,8 @@ export default function AppNavigator() {
         forceUpdate: true,
       });
       setForceUpdate(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +64,6 @@ export default function AppNavigator() {
     const loadToken = async () => {
       const token = await AsyncStorage.getItem("userToken");
       setUserToken(token);
-      setIsLoading(false);
     };
 
     checkAppVersion();
@@ -90,6 +91,8 @@ export default function AppNavigator() {
   }
 
   if (forceUpdate && updateConfig) {
+    console.log("Force", forceUpdate, updateConfig);
+
     return (
       <UpdateModal
         visible={true}
@@ -110,6 +113,7 @@ export default function AppNavigator() {
           visible={true}
           force={false}
           updateUrl={updateConfig.updateUrl}
+          setLater={() => setSoftUpdate(false)}
         />
       )}
     </AuthContext.Provider>

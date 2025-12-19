@@ -54,10 +54,13 @@ export class GoogleSheetService {
     await this.init();
     const { sheetName, columns } = SheetsConfig[entity];
 
+    console.log(values.length, values);
+
     await this.sheets.spreadsheets.values.append({
       spreadsheetId: this.sheetId,
-      range: `${sheetName}!A1:Z1`,
+      range: sheetName, // 🔥 IMPORTANT FIX
       valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
       requestBody: { values: [values] },
     });
 

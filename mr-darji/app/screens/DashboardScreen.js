@@ -236,7 +236,9 @@ const StatCard = ({ label, value, icon, color }) => (
     <View style={styles.statIconContainer}>
       <Icon name={icon} type="material" size={24} color={color} />
     </View>
-    <Text style={styles.statValue}>{value}</Text>
+    <Text style={styles.statValue}>
+      {icon === "payments" ? `₹${value}` : value}
+    </Text>
     <Text style={styles.statLabel}>{label}</Text>
   </View>
 );
@@ -324,22 +326,22 @@ export default function HomeDashboardScreen({ navigation }) {
   }, [width]);
 
   const [todayStats, setTodayStats] = useState([
-    { label: "Orders Today", value: 12, icon: "today", color: "#007AFF" },
+    { label: "Orders Today", value: 0, icon: "today", color: "#007AFF" },
     {
       label: "Pending Orders",
-      value: 5,
+      value: 0,
       icon: "hourglass-empty",
       color: "#FF9500",
     },
     {
       label: "Delivered",
-      value: 7,
+      value: 0,
       icon: "check-circle-outline",
       color: "#34C759",
     },
     {
       label: "Due Amount",
-      value: "₹14,500",
+      value: 0,
       icon: "payments",
       color: "#FF3B30",
     },
@@ -351,12 +353,41 @@ export default function HomeDashboardScreen({ navigation }) {
         const token = await AsyncStorage.getItem("userToken");
 
         const response = await axios.get(`${BASE_URL}/api/analytics/today`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const apiData = response.data;
+        console.log(apiData);
 
-        // setTodayStats();
+        setTodayStats([
+          {
+            label: "Orders Today",
+            value: apiData?.totalOrdersToday,
+            icon: "today",
+            color: "#007AFF",
+          },
+          {
+            label: "Pending Orders",
+            value: apiData?.pendingOrdersToday,
+            icon: "hourglass-empty",
+            color: "#FF9500",
+          },
+          {
+            label: "Delivered",
+            value: apiData?.deliveredOrdersToday,
+            icon: "check-circle-outline",
+            color: "#34C759",
+          },
+          {
+            label: "Due Amount",
+            value: apiData?.totalDueAmount,
+            icon: "payments",
+            color: "#FF3B30",
+          },
+        ]);
       } catch (error) {
         console.error("Error fetching today's stats:", error);
       }
@@ -413,14 +444,19 @@ export default function HomeDashboardScreen({ navigation }) {
         <View style={{ height: 70 }} />
 
         {/* 3. TODAY SNAPSHOT */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Today at a Glance</Text>
-          <View style={styles.statGrid}>
-            {todayStats.map((stat, index) => (
-              <StatCard key={index} {...stat} />
-            ))}
+        {todayStats[0]?.value == 0 &&
+        todayStats[1]?.value == 0 &&
+        todayStats[2]?.value == 0 &&
+        todayStats[3]?.value == 0 ? null : (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Today at a Glance</Text>
+            <View style={styles.statGrid}>
+              {todayStats?.map((stat, index) => (
+                <StatCard key={index} {...stat} />
+              ))}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* 2. PRIMARY ACTION ZONE (Using updated component with gradient props) */}
         <View style={styles.sectionPadding}>

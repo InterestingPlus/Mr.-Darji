@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, Linking } from "react-native";
 
-export default function UpdateModal({ visible, force, updateUrl }) {
+export default function UpdateModal({ visible, force, updateUrl, setLater }) {
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -15,13 +15,18 @@ export default function UpdateModal({ visible, force, updateUrl }) {
 
           <TouchableOpacity
             style={styles.updateBtn}
-            onPress={() => Linking.openURL(updateUrl)}
+            onPress={() =>
+              Linking.openURL(updateUrl || "https://mr-darji.netlify.app")
+            }
           >
             <Text style={{ color: "#fff", fontWeight: "600" }}>Update Now</Text>
           </TouchableOpacity>
 
           {!force && (
-            <TouchableOpacity style={styles.laterBtn}>
+            <TouchableOpacity
+              style={styles.laterBtn}
+              onPress={() => setLater()}
+            >
               <Text style={{ color: "#666" }}>Later</Text>
             </TouchableOpacity>
           )}

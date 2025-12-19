@@ -171,7 +171,7 @@ const ShopProfileScreen = ({ navigation }) => {
     if (shopData?.slug) {
       console.log("redirecting");
       // Redirect to the public view Website
-      Linking.openURL(`${WEB_URL}/shop/${shopData.slug}`);
+      Linking.openURL(`https://mr-darji.netlify.app/shop/${shopData.slug}`);
     } else {
       Alert.alert(
         "Action Required",

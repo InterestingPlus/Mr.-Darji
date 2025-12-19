@@ -79,7 +79,7 @@ export const CreateOrder = async (req, res) => {
       total_price,
       discount,
 
-      payment_status,
+      payment_status || "",
 
       delivery_date,
 
@@ -94,44 +94,6 @@ export const CreateOrder = async (req, res) => {
       created_at,
     ]);
 
-    // orderData = {
-    //   customer_id: customer.customer_id,
-    //   staff_assigned_id: staffAssigned,
-    //   status: "pending",
-    //   total_price: finalPrice,
-    //   discount: parseFloat(totalDiscount),
-    //   delivery_date: formatDeliveryDate(deliveryDateObj),
-    //   urgent: isUrgent,
-    //   notes: orderNotes,
-
-    //   items: orderItems.map((item) => ({
-    //     service_id: item.service_id,
-    //     quantity: item.quantity,
-    //     measurement_data: item.measurement_fields,
-    //   })),
-    // };
-
-    // await sheet.insert("Orders", [
-    //   order_id,
-    //   userDoc?.shopId,
-    //   customer_id,
-    //   staff_assigned_id || "",
-    //   measurement_id || "",
-    //   total_price,
-    //   discount,
-    //   payment_status,
-
-    //   delivery_date,
-    //   "",
-    //   "",
-    //   urgent,
-
-    //   notes,
-    //   JSON.stringify(images || []),
-
-    //   created_at,
-    //   created_at,
-    // ]);
     console.log("Order Created successfully!", order_id);
 
     res.status(200).json({ message: "Order Created Successfully!" });
