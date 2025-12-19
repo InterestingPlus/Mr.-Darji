@@ -270,8 +270,13 @@ export const AllOrders = async (req, res) => {
         return item.shop_id?.includes(userDoc?.shopId?.toString());
       });
 
+    if (!filteredResult) {
+      res.status(200).json({ message: "No data found", data: [] });
+      return;
+    }
+
     const finalData = await Promise.all(
-      filteredResult.map(async (item) => {
+      filteredResult?.map(async (item) => {
         const customerName = await getCustomerName(item.customer_id);
 
         return {

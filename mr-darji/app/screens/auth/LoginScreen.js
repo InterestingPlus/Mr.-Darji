@@ -89,8 +89,6 @@ export default function LoginScreen({ navigation }) {
         }
       );
 
-      console.log("Axios: ", response);
-
       const token = response.data.token;
       signIn(token);
 
@@ -205,17 +203,24 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.optionsRow}>
             <TouchableOpacity
               style={styles.checkboxContainer}
-              onPress={() => setRememberMe(!rememberMe)}
+              // onPress={() => setRememberMe(!rememberMe)}
             >
-              <View
+              {/* <View
                 style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
               >
                 {rememberMe && <Text style={styles.checkboxTick}>✓</Text>}
               </View>
-              <Text style={styles.checkboxLabel}>Remember me</Text>
+              <Text style={styles.checkboxLabel}>Remember me</Text> */}
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => console.log("Forgot Password Pressed")}
+              onPress={() => {
+                Alert.alert(
+                  "Comming Soon",
+                  "This Feature is Under Contruction!"
+                );
+
+                console.log("Forgot Password Pressed");
+              }}
             >
               <Text style={styles.forgotText}>Forgot?</Text>
             </TouchableOpacity>
@@ -242,7 +247,7 @@ export default function LoginScreen({ navigation }) {
             Don't have an account?{" "}
             <Text
               style={styles.signupLink}
-              // onPress={() => onNavigate('signup')}
+              onPress={() => navigation.navigate("Register")}
             >
               Sign Up
             </Text>

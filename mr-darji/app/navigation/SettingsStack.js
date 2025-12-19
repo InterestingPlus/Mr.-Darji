@@ -11,11 +11,11 @@ const Stack = createNativeStackNavigator();
 export default function SettingsStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Settings"
+      initialRouteName="SettingsScreen"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen
-        name="Settings"
+        name="SettingsScreen"
         component={SettingsScreen}
         options={{ title: "Main Settings" }}
       />

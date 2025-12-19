@@ -21,16 +21,18 @@ export const registerOwnerShop = async (req, res) => {
     addressLine1 = "N/A",
     city = "N/A",
     state = "N/A",
+    country = "N/A",
   } = req.body;
 
   if (
-    !email ||
+    !phone ||
     !password ||
     !shopName ||
     !shopType ||
     !addressLine1 ||
     !city ||
-    !state
+    !state ||
+    !country
   ) {
     return res
       .status(400)
@@ -39,23 +41,28 @@ export const registerOwnerShop = async (req, res) => {
 
   // validate and logging
   console.log("Registration for,", req.body);
-  console.log(
-    "Name",
-    name,
-    "Phone",
-    phone,
-    "Password",
-    password,
-    "Shop Name",
-    shopName,
-    "Address",
-    address
-  );
 
   try {
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
-      throw new Error("Phone already used");
+      return res.status(400).json({ message: "Phone already used" });
+    }
+
+    let languageCode;
+
+    switch (language) {
+      case "English":
+        languageCode = "en";
+        break;
+      case "Hindi":
+        languageCode = "hi";
+        break;
+      case "Gujarati":
+        languageCode = "mr";
+        break;
+      default:
+        languageCode = "en";
+        break;
     }
 
     const passwordHash = password ? await bcrypt.hash(password, 12) : null;
@@ -65,32 +72,36 @@ export const registerOwnerShop = async (req, res) => {
       phone,
       password: passwordHash,
       role: "owner",
-      language,
-      // dob, language
+      languageCode,
     });
 
     console.log("Created User", user);
 
-    const shopCode = await Shop.generateShopCode(city, state);
-    const slug = shopName
+    let slug = shopName
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
 
+    const random5 = Math.floor(10000 + Math.random() * 90000);
+
+    slug = `${slug}-${random5}`;
+
+    console.log(slug);
+
     const shop = await Shop.create([
       {
         name: shopName,
         slug: slug,
-        shopCode: shopCode, // <--- New generated code added
         owner_id: user._id,
         shopType: shopType, // <--- Required as per schema
         contact: {
-          phone: req.body.phone || "0000000000", // Mandatory Contact field needed
+          phone: phone || "0000000000", // Mandatory Contact field needed
           address: {
             line1: addressLine1,
             city: city,
             state: state,
+            country: country,
             // Pincode is optional here but helpful
           },
         },
@@ -99,18 +110,21 @@ export const registerOwnerShop = async (req, res) => {
 
     console.log("Created Shop", shop);
 
-    await User.updateOne({ _id: user._id }, { $set: { shopId: shop._id } });
+    await User.findByIdAndUpdate(user._id, {
+      shopId: shop[0]._id,
+    });
 
     const token = signToken({
       userId: user._id,
       role: "owner",
       shopId: shop._id,
+      language: user.language,
     });
 
     console.log("Token", token);
     console.log("Successfully Created");
 
-    res.json({ ok: true, user, shop, token });
+    res.status(200).json({ ok: true, user, shop, token });
   } catch (error) {
     console.error("Registration failed:", error);
 
@@ -151,7 +165,12 @@ export const loginUser = async (req, res) => {
       language: user.language,
     });
 
-    console.log("token bhej diya gaya hai", token);
+    console.log("token bhej diya gaya hai", token, {
+      userId: user._id,
+      role: user.role,
+      shopId: user.shopId,
+      language: user.language,
+    });
 
     res.json({
       token,

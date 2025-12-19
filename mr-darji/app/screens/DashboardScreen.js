@@ -85,18 +85,18 @@ const quickAccessItems = [
     screen: "ReportsScreen",
   },
   {
-    label: "Gallery",
-    icon: { name: "image", type: "material" },
-
-    stack: "Orders",
-    screen: "GalleryScreen",
-  },
-  {
     label: "Shop Profile",
     icon: { name: "store", type: "material" },
 
     stack: "Settings",
     screen: "ShopProfile",
+  },
+  {
+    label: "Settings",
+    icon: { name: "settings", type: "material" },
+
+    stack: "Settings",
+    screen: "SettingsScreen",
   },
 ];
 

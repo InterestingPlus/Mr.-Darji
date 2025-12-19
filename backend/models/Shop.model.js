@@ -38,7 +38,6 @@ const workingHoursSchema = new Schema(
 const ShopSchema = new Schema(
   {
     // 🧩 1. Basic Identity & Ownership
-    shopCode: { type: String, unique: true, required: true, trim: true },
     owner_id: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -127,40 +126,6 @@ const ShopSchema = new Schema(
   },
   { timestamps: true }
 ); // createdAt and updatedAt added automatically
-
-ShopSchema.statics.generateShopCode = async function (city, state) {
-  // 1. Prefix determination (Customize based on your business logic)
-  const basePrefix = "MRD"; // Mock Retailer Darji
-  const stateCode = state ? state.substring(0, 3).toUpperCase() : "DEF"; // Use first 3 letters of state, or 'DEF'
-  const fullPrefix = `${basePrefix}-${stateCode}`;
-
-  // 2. Find the count of existing shops with this prefix
-  const regex = new RegExp(`^${fullPrefix}-\\d{4}$`);
-
-  // Count documents matching the prefix format
-  const count = await this.countDocuments({ shopCode: { $regex: regex } });
-
-  // 3. Calculate next sequence number (e.g., if count is 10, next number is 11)
-  const nextNumber = count + 1;
-
-  // 4. Format the sequence number to 4 digits (e.g., 1 -> 0001, 11 -> 0011)
-  const sequence = String(nextNumber).padStart(4, "0");
-
-  return `${fullPrefix}-${sequence}`;
-};
-
-// Middleware to auto-generate slug before saving (important for SEO)
-ShopSchema.pre("save", function (next) {
-  if (this.isModified("name")) {
-    // Simple slug creation (In real-world, use a library like 'slugify')
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-  next();
-});
 
 const Shop = mongoose.model("Shop", ShopSchema);
 export default Shop;

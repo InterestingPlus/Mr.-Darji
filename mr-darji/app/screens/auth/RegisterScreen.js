@@ -11,12 +11,17 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
+  Modal,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient"; // For beautiful gradients
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import BASE_URL from "../../config";
+import { useContext } from "react";
+import { AuthContext } from "../../navigation/AppNavigator";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // --- Icon Component (Adapted from LoginScreen style) ---
 const CustomIcon = ({ name, color = "#4B5563", size = 20, style }) => {
@@ -39,6 +44,9 @@ const CustomIcon = ({ name, color = "#4B5563", size = 20, style }) => {
       break;
     case "Year":
       iconContent = "⏳";
+      break;
+    case "MapPin":
+      iconContent = "📍";
       break;
     case "ArrowLeft":
       iconContent = "←";
@@ -91,22 +99,35 @@ const GradientButton = ({
   </TouchableOpacity>
 );
 
+const { height } = Dimensions.get("window");
+
 export default function RegisterScreen({ navigation }) {
   const [step, setStep] = useState("home");
   const [language, setLanguage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
 
+  const { signIn } = useContext(AuthContext);
+
+  const SHOP_TYPES = [
+    "Tailor",
+    "Boutique",
+    "Fashion Designer",
+    "Men Tailor",
+    "Women Tailor",
+    "Unisex",
+  ];
+
   const [form, setForm] = useState({
     name: "",
-    dob: "",
     phone: "",
     password: "",
     confirmPassword: "",
-    shopName: "",
-    year: "",
-  });
 
+    shopName: "",
+    shopType: "",
+    shopAddress: "",
+  });
   async function register() {
     console.log(form);
 
@@ -126,14 +147,26 @@ export default function RegisterScreen({ navigation }) {
         `${BASE_URL}/api/auth/register-owner-shop`,
         {
           name: form.name,
-          dob: form.dob,
           phone: form.phone,
           password: form.password,
-          shopName: form.shopName,
-          establishedYear: form.year,
           language: language,
-          address: "Rajula",
+
+          shopName: form.shopName,
+          shopType: form.shopType,
+          addressLine1: form.shopAddress,
         },
+
+        // name,
+        // phone,
+        // password,
+        // shopName,
+        // language = "en",
+        // shopType = "Tailor",
+        // addressLine1 = "N/A",
+        // city = "N/A",
+        // state = "N/A",
+        // country = "N/A",
+
         {
           headers: {
             "Content-Type": "application/json",
@@ -141,14 +174,12 @@ export default function RegisterScreen({ navigation }) {
         }
       );
 
-      console.log("Axios: ", response);
+      Alert.alert("Registration Successful!");
 
       const token = response.data.token;
-      await AsyncStorage.setItem("userToken", token);
+      signIn(token);
 
       setLoading(false);
-      Alert.alert("Registration Successful!");
-      navigation.replace("MainTabs");
     } catch (e) {
       setLoading(false);
       console.log("Axios Error Object:", e);
@@ -203,6 +234,49 @@ export default function RegisterScreen({ navigation }) {
     </View>
   );
 
+  /* ---------------- SHOP TYPE SELECTOR ---------------- */
+  const ShopTypeSelector = ({ value, onSelect }) => {
+    const [visible, setVisible] = useState(false);
+
+    return (
+      <>
+        <TouchableOpacity
+          style={shopTypeStyles.input}
+          onPress={() => setVisible(true)}
+        >
+          <Text style={shopTypeStyles.inputText}>
+            {value || "Select your primary shop category"}
+          </Text>
+        </TouchableOpacity>
+
+        <Modal visible={visible} transparent animationType="slide">
+          <View style={shopTypeStyles.modalOverlay}>
+            <View style={shopTypeStyles.modalContent}>
+              <FlatList
+                data={SHOP_TYPES}
+                keyExtractor={(i) => i}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={shopTypeStyles.option}
+                    onPress={() => {
+                      onSelect(item);
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={shopTypeStyles.optionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+              <TouchableOpacity onPress={() => setVisible(false)}>
+                <Text style={shopTypeStyles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#F3F4F6" />
@@ -235,32 +309,69 @@ export default function RegisterScreen({ navigation }) {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* HOME SCREEN */}
           {step === "home" && (
-            <StepContainer>
-              <View style={styles.homeScreen}>
-                <Text style={styles.mainTitle}>Mr. Darji</Text>
-                <Text style={styles.subTitle}>Tailor Shop Management</Text>
+            <View style={styles.container}>
+              {/* --- TOP PART (50%) - Branding & Logo --- */}
+              <LinearGradient
+                colors={["#1E1B4B", "#312E81"]} // Premium Deep Indigo
+                style={homeScreenStyles.topSection}
+              >
+                <View style={homeScreenStyles.brandContent}>
+                  {/* Logo Icon */}
+                  <View style={homeScreenStyles.logoContainer}>
+                    <MaterialCommunityIcons
+                      name="scissors-cutting"
+                      size={50}
+                      color="#FBBF24"
+                    />
+                  </View>
 
-                <GradientButton
-                  onPress={() => setStep("language")}
-                  text="Start Registration"
-                  colors={["#4F46E5", "#818CF8"]} // Indigo/Violet
-                  style={{ marginTop: 80 }}
-                />
+                  {/* Title & Subtitle */}
+                  <Text style={homeScreenStyles.mainTitle}>Mr. Darji</Text>
+                  <View style={homeScreenStyles.divider} />
+                  <Text style={homeScreenStyles.subTitle}>
+                    Tailor Shop{"\n"}Management
+                  </Text>
+                  <Text style={homeScreenStyles.tagline}>
+                    Precision in every stitch.
+                  </Text>
+                </View>
+              </LinearGradient>
 
-                <GradientButton
-                  onPress={() => {
-                    navigation.navigate("Login");
-                  }}
-                  text="Login"
-                  colors={["#F97316", "#FBBF24"]} // Orange/Amber
-                  style={{ marginTop: 20 }}
-                />
+              {/* --- BOTTOM PART (50%) - Navigation --- */}
+              <View style={homeScreenStyles.bottomSection}>
+                <View style={homeScreenStyles.buttonWrapper}>
+                  <Text style={homeScreenStyles.welcomeText}>
+                    Welcome back,
+                  </Text>
+                  <Text style={homeScreenStyles.instructionText}>
+                    Manage your shop with ease.
+                  </Text>
 
-                <Text style={styles.developerText}>
-                  Developed by Jatin Poriya
-                </Text>
+                  {/* Primary Action */}
+                  <GradientButton
+                    onPress={() => setStep("language")}
+                    text="Start Registration"
+                    colors={["#4F46E5", "#818CF8"]}
+                    style={homeScreenStyles.mainBtn}
+                  />
+
+                  {/* Secondary Action */}
+                  <GradientButton
+                    onPress={() => navigation.navigate("Login")}
+                    text="Login to Account"
+                    colors={["#F97316", "#FBBF24"]}
+                    style={homeScreenStyles.secondaryBtn}
+                  />
+                </View>
+
+                <View style={homeScreenStyles.footer}>
+                  <Text style={homeScreenStyles.developerText}>
+                    Developed by{" "}
+                    <Text style={homeScreenStyles.devName}>Jatin Poriya</Text>
+                  </Text>
+                </View>
               </View>
-            </StepContainer>
+            </View>
           )}
 
           {/* LANGUAGE SCREEN */}
@@ -309,12 +420,7 @@ export default function RegisterScreen({ navigation }) {
               <View style={styles.stepContainer}>
                 <Text style={styles.stepTitle}>2. Owner Information</Text>
 
-                {renderTextInput("name", "Full Name", "User")}
-                {renderTextInput(
-                  "dob",
-                  "Date of Birth (DD/MM/YYYY)",
-                  "Calendar"
-                )}
+                {renderTextInput("name", "Your Full Name", "User")}
 
                 <GradientButton
                   onPress={() => setStep("contact")}
@@ -333,6 +439,7 @@ export default function RegisterScreen({ navigation }) {
                 <Text style={styles.stepTitle}>3. Contact & Security</Text>
 
                 {renderTextInput("phone", "Phone Number", "Phone", "phone-pad")}
+
                 {renderTextInput(
                   "password",
                   "Password (Min 6 chars)",
@@ -365,11 +472,17 @@ export default function RegisterScreen({ navigation }) {
                 <Text style={styles.stepTitle}>4. Shop Details</Text>
 
                 {renderTextInput("shopName", "Shop Name", "Shop")}
+
+                <ShopTypeSelector
+                  value={form.shopType}
+                  onSelect={(v) => setForm({ ...form, shopType: v })}
+                />
+
                 {renderTextInput(
-                  "year",
-                  "Established Year (YYYY)",
-                  "Year",
-                  "numeric"
+                  "shopAddress",
+                  "Shop Address",
+                  "MapPin",
+                  "default"
                 )}
 
                 <GradientButton
@@ -578,5 +691,118 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "700",
+  },
+});
+
+const shopTypeStyles = StyleSheet.create({
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  inputText: { fontSize: 14 },
+  modalOverlay: { flex: 1, justifyContent: "flex-end" },
+  modalContent: { backgroundColor: "#fff", padding: 20 },
+  option: { padding: 15 },
+  optionText: { fontSize: 14 },
+  cancelText: { color: "red", textAlign: "center", marginTop: 10 },
+});
+
+const homeScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  // Top Part Styles
+  topSection: {
+    height: height * 0.45,
+    justifyContent: "center",
+    paddingHorizontal: 40,
+    borderBottomRightRadius: 80, // Premium curve
+  },
+  brandContent: {
+    marginTop: 20,
+  },
+  logoContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  mainTitle: {
+    fontSize: 42,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: 1,
+  },
+  divider: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#F97316",
+    marginVertical: 10,
+    borderRadius: 2,
+  },
+  subTitle: {
+    fontSize: 22,
+    fontWeight: "300",
+    color: "#E0E7FF",
+    lineHeight: 28,
+  },
+  tagline: {
+    fontSize: 14,
+    color: "#818CF8",
+    marginTop: 10,
+    fontStyle: "italic",
+  },
+
+  // Bottom Part Styles
+  bottomSection: {
+    height: height * 0.45,
+    paddingHorizontal: 30,
+    justifyContent: "space-between",
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#1F2937",
+  },
+  instructionText: {
+    fontSize: 16,
+    color: "#6B7280",
+    marginBottom: 40,
+  },
+  mainBtn: {
+    height: 58,
+    borderRadius: 16,
+    elevation: 8,
+    shadowColor: "#4F46E5",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  secondaryBtn: {
+    height: 58,
+    marginTop: 15,
+    borderRadius: 16,
+    elevation: 4,
+  },
+  footer: {
+    alignItems: "center",
+  },
+  developerText: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    letterSpacing: 0.5,
+  },
+  devName: {
+    color: "#4F46E5",
+    fontWeight: "600",
   },
 });
