@@ -127,7 +127,7 @@ const LandingPage = () => {
               </div>
 
               <div className="cta-group">
-                <button className="btn-primary">
+                <button className="btn-primary" onClick={handleDownload}>
                   {status === "idle" && "Download App"}
                   {status === "starting" && "Starting…"}
                   {status === "downloading" && "Downloading…"}
