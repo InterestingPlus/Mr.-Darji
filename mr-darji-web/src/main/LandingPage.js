@@ -29,9 +29,26 @@ import { Helmet } from "react-helmet-async";
 
 // Logo
 import logo from "../assets/Mr-Darji-.png";
+import { useState } from "react";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  const [status, setStatus] = useState("idle");
+
+  const handleDownload = () => {
+    setStatus("starting");
+
+    setTimeout(() => {
+      setStatus("downloading");
+      window.location.href =
+        "https://github.com/InterestingPlus/Mr.-Darji/releases/download/v1.0.1/mr-darji-v1.0.1.apk";
+    }, 500);
+
+    setTimeout(() => {
+      setStatus("done");
+    }, 3000);
+  };
 
   return (
     <>
@@ -111,7 +128,11 @@ const LandingPage = () => {
 
               <div className="cta-group">
                 <button className="btn-primary">
-                  Download App <Smartphone size={18} />
+                  {status === "idle" && "Download App"}
+                  {status === "starting" && "Starting…"}
+                  {status === "downloading" && "Downloading…"}
+                  {status === "done" && "Check Downloads"}{" "}
+                  <Smartphone size={18} />
                 </button>
                 <button
                   className="btn-outline"
