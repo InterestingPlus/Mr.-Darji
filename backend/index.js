@@ -15,8 +15,12 @@ import measurementRoutes from "./routes/measurement.routes.js";
 import shopRoutes from "./routes/profile.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 
+import job from "./services/cron.js";
+
 dotenv.config();
 const app = express();
+
+job.start();
 
 // middleware
 app.use(helmet());

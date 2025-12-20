@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.interesting123.mrdarji"
+      "bundleIdentifier": "com.interestingplus.mrdarji"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.interesting123.mrdarji"
+      "package": "com.interestingplus.mrdarji"
     },
     "web": {
       "favicon": "./assets/favicon.png"
