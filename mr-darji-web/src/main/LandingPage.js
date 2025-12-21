@@ -426,13 +426,13 @@ const LandingPage = () => {
                   growth in one app.
                 </p>
                 <div className="social-links">
-                  <a href="#">
+                  <a href="https://www.instagram.com/jatin_poriya_404">
                     <Instagram size={20} />
                   </a>
                   <a href="#">
                     <Twitter size={20} />
                   </a>
-                  <a href="#">
+                  <a href="https://www.linkedin.com/in/jatin-poriya">
                     <Linkedin size={20} />
                   </a>
                 </div>
@@ -462,14 +462,20 @@ const LandingPage = () => {
                 <h4>Legal</h4>
                 <ul>
                   <li>
-                    <a href="#privacy">Privacy Policy</a>
+                    <a href="https://mr-darji.netlify.app/privacy">
+                      Privacy Policy
+                    </a>
                   </li>
                   <li>
-                    <a href="#terms">Terms of Service</a>
+                    <a href="https://mr-darji.netlify.app/about">About Us</a>
                   </li>
                   <li>
-                    <a href="#security">Data Security</a>
+                    <a href="https://mr-darji.netlify.app/contact">
+                      Contact Us
+                    </a>
                   </li>
+
+                  {/* Terms, Security, and Cookie Policy */}
                 </ul>
               </div>
 
