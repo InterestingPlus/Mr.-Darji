@@ -53,42 +53,57 @@ const LandingPage = () => {
   return (
     <>
       <Helmet>
-        {/* Basic SEO */}
-        <title>Tailor Management App | Smart Tailoring Business Software</title>
+        {/* ===== BASIC SEO ===== */}
+        <title>Mr. Darji | Smart Tailoring Business App</title>
+
         <meta
           name="description"
-          content="Manage customers, measurements, orders, staff, bills and reports with a modern tailor management app. Built for tailors, boutiques and fashion designers."
+          content="Modern tailoring business app to manage customers, measurements, orders, bills, staff and reports. Built for tailors, boutiques and fashion designers."
         />
+
         <meta
           name="keywords"
-          content="tailor app, tailor management software, boutique management, stitching app, tailor billing app"
+          content="mr darji, tailor app, tailoring software, tailor management system, tailoring business app, boutique management app, stitching app, tailor billing software, tailoring ERP, Jatin Poriya"
         />
-        <meta name="author" content="Tailor App" />
 
-        {/* Mobile */}
+        <meta name="author" content="Jatin Poriya" />
+        <meta name="application-name" content="Mr. Darji" />
+
+        {/* ===== MOBILE ===== */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {/* Open Graph (WhatsApp, Facebook) */}
-        <meta property="og:title" content="Tailor Management App" />
+        {/* ===== FAVICON / LOGO ===== */}
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+
+        {/* ===== CANONICAL ===== */}
+        <link rel="canonical" href="https://mr-darji.netlify.app/" />
+
+        {/* ===== OPEN GRAPH (WhatsApp, Facebook, LinkedIn) ===== */}
+        <meta property="og:site_name" content="Mr. Darji" />
+        <meta property="og:title" content="Mr. Darji" />
         <meta
           property="og:description"
-          content="Run your tailor shop like a modern business. Orders, measurements, staff & reports in one app."
+          content="Simple, fast and built for modern tailors. Run your tailoring business professionally with Mr. Darji."
         />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://mr-darji.netlify.app" />
-        <meta property="og:image" content="/seo/og-image.png" />
+        <meta property="og:url" content="https://mr-darji.netlify.app/" />
+        <meta property="og:image" content="/banner.png" />
+        {/* <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" /> */}
 
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Tailor Management App" />
+        {/* ===== TWITTER CARD ===== */}
+        <meta name="twitter:card" content="/banner.png" />
+        <meta name="twitter:title" content="Mr. Darji" />
         <meta
           name="twitter:description"
-          content="A complete management solution for tailors and boutiques."
+          content="A smart app to manage tailoring business, orders, customers and bills with ease."
         />
-        <meta name="twitter:image" content="/seo/og-image.png" />
+        <meta name="twitter:image" content="/banner.png" />
 
-        {/* Canonical */}
-        <link rel="canonical" href="https://mr-darji.netlify.app" />
+        {/* ===== SEARCH ENGINE HINTS ===== */}
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
       </Helmet>
 
       <main className="landing-wrapper">
@@ -102,13 +117,13 @@ const LandingPage = () => {
 
                   <img src={logo} alt="Mr. Darji" style={{ width: 40 }} />
                 </div>
-                <span className="brand-name">Mr. Darji</span>
+                <h1 className="brand-name">Mr. Darji</h1>
               </div>
 
-              <h1 className="main-heading">
+              <h2 className="main-heading">
                 Run Your Tailor Shop Like a{" "}
                 <span className="text-highlight">Modern Business</span>
-              </h1>
+              </h2>
               <p className="sub-text">
                 Manage customers, measurements, orders, staff, payments, and
                 reports — all in one simple app.
