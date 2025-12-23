@@ -52,59 +52,9 @@ const LandingPage = () => {
 
   return (
     <>
-      <Helmet>
-        {/* ===== BASIC SEO ===== */}
-        <title>Mr. Darji | Smart Tailoring Business App</title>
+      {/* <Helmet>
 
-        <meta
-          name="description"
-          content="Modern tailoring business app to manage customers, measurements, orders, bills, staff and reports. Built for tailors, boutiques and fashion designers."
-        />
-
-        <meta
-          name="keywords"
-          content="mr darji, tailor app, tailoring software, tailor management system, tailoring business app, boutique management app, stitching app, tailor billing software, tailoring ERP, Jatin Poriya"
-        />
-
-        <meta name="author" content="Jatin Poriya" />
-        <meta name="application-name" content="Mr. Darji" />
-
-        {/* ===== MOBILE ===== */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        {/* ===== FAVICON / LOGO ===== */}
-        <link rel="icon" type="image/png" href="/logo.png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
-
-        {/* ===== CANONICAL ===== */}
-        <link rel="canonical" href="https://mr-darji.netlify.app/" />
-
-        {/* ===== OPEN GRAPH (WhatsApp, Facebook, LinkedIn) ===== */}
-        <meta property="og:site_name" content="Mr. Darji" />
-        <meta property="og:title" content="Mr. Darji" />
-        <meta
-          property="og:description"
-          content="Simple, fast and built for modern tailors. Run your tailoring business professionally with Mr. Darji."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://mr-darji.netlify.app/" />
-        <meta property="og:image" content="/banner.png" />
-        {/* <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" /> */}
-
-        {/* ===== TWITTER CARD ===== */}
-        <meta name="twitter:card" content="/banner.png" />
-        <meta name="twitter:title" content="Mr. Darji" />
-        <meta
-          name="twitter:description"
-          content="A smart app to manage tailoring business, orders, customers and bills with ease."
-        />
-        <meta name="twitter:image" content="/banner.png" />
-
-        {/* ===== SEARCH ENGINE HINTS ===== */}
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow" />
-      </Helmet>
+      </Helmet> */}
 
       <main className="landing-wrapper">
         {/* 1. HERO SECTION */}
