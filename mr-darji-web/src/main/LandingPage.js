@@ -52,10 +52,6 @@ const LandingPage = () => {
 
   return (
     <>
-      {/* <Helmet>
-
-      </Helmet> */}
-
       <main className="landing-wrapper">
         {/* 1. HERO SECTION */}
         <section className="hero">
