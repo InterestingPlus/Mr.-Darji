@@ -22,6 +22,7 @@ import axios from "axios";
 import BASE_URL from "../../config";
 import { useContext } from "react";
 import { AuthContext } from "../../navigation/AppNavigator";
+import GoogleLogin from "./GoogleLogin";
 // import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // --- Icon Component (Adapted from LoginScreen style) ---
@@ -359,6 +360,8 @@ export default function RegisterScreen({ navigation }) {
                     style={homeScreenStyles.secondaryBtn}
                   />
                 </View>
+
+                <GoogleLogin />
 
                 <View style={homeScreenStyles.footer}>
                   <Text style={homeScreenStyles.developerText}>

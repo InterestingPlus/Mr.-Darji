@@ -13,7 +13,6 @@ import {
   Alert,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import * as Haptics from "expo-haptics";
 
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";

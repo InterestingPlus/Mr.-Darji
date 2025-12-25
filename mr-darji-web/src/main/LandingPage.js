@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import "./LandingPage.scss";
 import { useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 
 // Logo
 import logo from "../assets/Mr-Darji-.png";
@@ -354,11 +353,21 @@ const LandingPage = () => {
                 </p>
 
                 <div className="cta-buttons">
-                  <button className="btn-primary-large">
-                    Download the App <Smartphone size={20} />
+                  <button
+                    className="btn-primary-large"
+                    onClick={handleDownload}
+                  >
+                    {status === "idle" && "Download App"}
+                    {status === "starting" && "Starting…"}
+                    {status === "downloading" && "Downloading…"}
+                    {status === "done" && "Check Downloads"}{" "}
+                    <Smartphone size={20} />
                   </button>
-                  <button className="btn-secondary-large">
-                    View Sample Shop Profile <ArrowRight size={20} />
+                  <button
+                    className="btn-secondary-large"
+                    onClick={() => navigate("/shops")}
+                  >
+                    Shop Profiles <ArrowRight size={20} />
                   </button>
                 </div>
               </div>

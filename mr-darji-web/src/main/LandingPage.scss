@@ -1,6 +1,7 @@
 // Variables
 $primary-indigo: #1e1b4b;
-$action-indigo: #4f46e5;
+// $action-indigo: #27b6e5;
+$action-indigo: #9104f6;
 $accent-amber: #fbbf24;
 $text-light: #e0e7ff;
 $text-dark: #1f2937;
@@ -927,5 +928,16 @@ $slate-light: #94a3b8;
     left: 45%;
 
     z-index: -1;
+  }
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: $white;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
   }
 }

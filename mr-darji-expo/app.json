@@ -2,6 +2,8 @@
   "expo": {
     "name": "Mr. Darji",
     "slug": "mr-darji",
+    "scheme": "mrdarji",
+    "owner": "interesting123",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,11 +29,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "8284307b-6a63-4109-9d41-0b53e0def6f9"
-      }
-    },
     "build": {
       "preview": {
         "android": {
@@ -39,6 +36,13 @@
         }
       }
     },
-    "plugins": ["expo-secure-store"]
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8284307b-6a63-4109-9d41-0b53e0def6f9"
+      }
+    }
   }
 }
