@@ -38,11 +38,24 @@ const LandingPage = () => {
   const handleDownload = () => {
     setStatus("starting");
 
-    setTimeout(() => {
-      setStatus("downloading");
-      window.location.href =
-        "https://github.com/InterestingPlus/Mr.-Darji/releases/download/v1.0.1/mr-darji-v1.0.1.apk";
-    }, 500);
+    try {
+      setTimeout(async () => {
+        setStatus("downloading");
+
+        // https://mr-darji.netlify.app/app-version.json
+
+        const response = await fetch(
+          "https://mr-darji.netlify.app/app-version.json"
+        );
+        const data = await response.json();
+
+        const version = data.latestVersion;
+
+        window.location.href = `https://github.com/InterestingPlus/Mr.-Darji/releases/download/v${version}/mr-darji-v${version}.apk`;
+      }, 500);
+    } catch (e) {
+      window.alert("Something went wrong.", e);
+    }
 
     setTimeout(() => {
       setStatus("done");
