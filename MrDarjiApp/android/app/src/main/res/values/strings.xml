@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Mr Darji</string>
+
+    <string name="default_web_client_id">
+        1041457370478-gqcn52k482vhso8c2454v6dkeurgncud.apps.googleusercontent.com
+    </string>
+</resources>
