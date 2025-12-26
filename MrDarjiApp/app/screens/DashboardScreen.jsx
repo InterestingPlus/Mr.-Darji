@@ -17,13 +17,9 @@ import Svg, { Path } from 'react-native-svg';
 import BASE_URL from '../config';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
-
-// --- DUMMY DATA (No Change) ---
-const DUMMY_SHOP_NAME = 'Ramesh Tailors';
-const DUMMY_USER_NAME = 'Ramesh';
-const PENDING_ALERTS = 3;
 
 const PlusIcon = ({ color = '#111418', size = 24 }) => (
   <Svg width={size} height={size} viewBox="0 0 256 256" fill={color}>
@@ -43,74 +39,31 @@ const ListBulletsIcon = ({ color = '#111418', size = 24 }) => (
   </Svg>
 );
 
-const quickAccessItems = [
-  {
-    label: 'Orders',
-    icon: { name: 'package-variant-closed', type: 'material-community' },
+const reminders = [];
+// [
+//   {
+//     id: 1,
+//     text: '3 orders scheduled for delivery tomorrow',
+//     icon: 'schedule',
+//     color: '#FFCC00',
+//   },
+//   { id: 2, text: '2 payments pending', icon: 'payments', color: '#FF3B30' },
+//   {
+//     id: 3,
+//     text: 'Measurements missing for 1 order',
+//     icon: 'straighten',
+//     color: '#007AFF',
+//   },
+// ];
 
-    stack: 'Orders',
-    screen: 'OrdersList',
-  },
-  {
-    label: 'Customers',
-    icon: { name: 'account-group', type: 'material-community' },
-
-    stack: 'Customers',
-    screen: 'CustomersList',
-  },
-  {
-    label: 'Services',
-    icon: { name: 'tools', type: 'material-community' },
-
-    stack: 'Settings',
-    screen: 'ServicesList',
-  },
-  {
-    label: 'Reports',
-    icon: { name: 'bar-chart', type: 'material' },
-
-    stack: 'Orders',
-    screen: 'ReportsScreen',
-  },
-  {
-    label: 'Shop Profile',
-    icon: { name: 'store', type: 'material' },
-
-    stack: 'Settings',
-    screen: 'ShopProfile',
-  },
-  {
-    label: 'Settings',
-    icon: { name: 'settings', type: 'material' },
-
-    stack: 'Settings',
-    screen: 'SettingsScreen',
-  },
-];
-
-const reminders = [
-  {
-    id: 1,
-    text: '3 orders scheduled for delivery tomorrow',
-    icon: 'schedule',
-    color: '#FFCC00',
-  },
-  { id: 2, text: '2 payments pending', icon: 'payments', color: '#FF3B30' },
-  {
-    id: 3,
-    text: 'Measurements missing for 1 order',
-    icon: 'straighten',
-    color: '#007AFF',
-  },
-];
-
-const recentActivity = [
-  'Order #124 created (₹3,000)',
-  'Payment of ₹1200 received (Order #122)',
-  'Customer Anil updated (Phone: 9xxxx)',
-  'Order #125 created (₹4,500)',
-  'Order #121 delivered',
-];
+const recentActivity = [];
+// [
+//   'Order #124 created (₹3,000)',
+//   'Payment of ₹1200 received (Order #122)',
+//   'Customer Anil updated (Phone: 9xxxx)',
+//   'Order #125 created (₹4,500)',
+//   'Order #121 delivered',
+// ];
 
 // --- 1. APP HEADER Component (No Change) ---
 const AppHeader = ({
@@ -119,40 +72,58 @@ const AppHeader = ({
   pendingAlerts,
   onSettingsPress,
   onNotificationsPress,
-}) => (
-  <View style={styles.headerContainer}>
-    {/* Left Side: Logo & Greeting */}
-    <View style={styles.headerLeft}>
-      <Avatar
-        rounded
-        source={{ uri: 'https://via.placeholder.com/40/007AFF/FFFFFF?text=RT' }}
-        size="medium"
-        containerStyle={styles.headerAvatar}
-      />
-      <View>
-        <Text style={styles.headerGreeting}>Good Morning, {userName} 👋</Text>
-        <Text style={styles.headerShopName}>{shopName}</Text>
+  translation,
+}) => {
+  function getGreeting() {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      return translation('dashboard.greeting.morning');
+    } else if (currentHour < 18) {
+      return translation('dashboard.greeting.afternoon');
+    } else {
+      return translation('dashboard.greeting.evening');
+    }
+  }
+
+  return (
+    <View style={styles.headerContainer}>
+      {/* Left Side: Logo & Greeting */}
+      <View style={styles.headerLeft}>
+        <Avatar
+          rounded
+          source={{
+            uri: 'https://via.placeholder.com/40/007AFF/FFFFFF?text=RT',
+          }}
+          size="medium"
+          containerStyle={styles.headerAvatar}
+        />
+        <View>
+          <Text style={styles.headerGreeting}>
+            {getGreeting()}, {userName} 👋
+          </Text>
+          <Text style={styles.headerShopName}>{shopName}</Text>
+        </View>
+      </View>
+
+      {/* Right Side: Icons */}
+      <View style={styles.headerRight}>
+        <TouchableOpacity
+          onPress={onNotificationsPress}
+          style={styles.iconButton}
+        >
+          <Icon name="notifications" type="material" size={24} color="#333" />
+          {pendingAlerts > 0 && (
+            <Badge
+              status="error"
+              value={pendingAlerts > 9 ? '9+' : pendingAlerts}
+              containerStyle={styles.badgeContainer}
+            />
+          )}
+        </TouchableOpacity>
       </View>
     </View>
-
-    {/* Right Side: Icons */}
-    <View style={styles.headerRight}>
-      <TouchableOpacity
-        onPress={onNotificationsPress}
-        style={styles.iconButton}
-      >
-        <Icon name="notifications" type="material" size={24} color="#333" />
-        {pendingAlerts > 0 && (
-          <Badge
-            status="error"
-            value={pendingAlerts > 9 ? '9+' : pendingAlerts}
-            containerStyle={styles.badgeContainer}
-          />
-        )}
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+  );
+};
 
 // --- 2. PRIMARY ACTION ZONE Component (UPDATED with Gradient) ---
 const PrimaryActionCard = ({
@@ -259,46 +230,56 @@ const QuickShortcut = ({ icon, label, onPress }) => (
 );
 
 // --- 5. BUSINESS OVERVIEW Component (Chart Placeholder) (No Change) ---
-const BusinessOverviewCard = ({ onPress }) => (
-  <TouchableOpacity
-    style={styles.overviewCard}
-    activeOpacity={0.8}
-    onPress={onPress}
-  >
-    <Text style={styles.sectionTitleSmall}>Orders - Last 7 Days</Text>
+const BusinessOverviewCard = ({ onPress }) => {
+  const { t } = useTranslation();
 
-    {/* Chart Placeholder Area */}
-    <View style={styles.chartPlaceholder}>
-      {/* Simple Bar Chart Illustration (Hardcoded for wireframe) */}
-      <View
-        style={[styles.bar, { height: '50%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '30%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '70%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '40%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '80%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '60%', backgroundColor: '#007AFF' }]}
-      />
-      <View
-        style={[styles.bar, { height: '45%', backgroundColor: '#007AFF' }]}
-      />
-    </View>
+  return (
+    <TouchableOpacity
+      style={styles.overviewCard}
+      activeOpacity={0.8}
+      onPress={onPress}
+    >
+      <Text style={styles.sectionTitleSmall}>
+        {t('dashboard.report.description')}
+      </Text>
 
-    <Text style={styles.overviewLink}>View Detailed Analytics →</Text>
-  </TouchableOpacity>
-);
+      {/* Chart Placeholder Area */}
+      <View style={styles.chartPlaceholder}>
+        <View
+          style={[styles.bar, { height: '50%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '30%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '70%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '40%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '80%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '60%', backgroundColor: '#007AFF' }]}
+        />
+        <View
+          style={[styles.bar, { height: '45%', backgroundColor: '#007AFF' }]}
+        />
+      </View>
+
+      <Text style={styles.overviewLink}>{t('dashboard.report.button')} →</Text>
+    </TouchableOpacity>
+  );
+};
 
 // --- MAIN DASHBOARD COMPONENT ---
 export default function HomeDashboardScreen({ navigation }) {
+  const { t } = useTranslation();
+
+  const [shop, setShop] = useState({});
+  const [user, setUser] = useState({});
+
   const handleNavigate = useCallback((stack, screen) => {
     // Replace with actual navigation logic
     try {
@@ -348,9 +329,57 @@ export default function HomeDashboardScreen({ navigation }) {
     },
   ]);
 
+  const quickAccessItems = [
+    {
+      label: t('dashboard.quickAccess.orders'),
+      icon: { name: 'package-variant-closed', type: 'material-community' },
+
+      stack: 'Orders',
+      screen: 'OrdersList',
+    },
+    {
+      label: t('dashboard.quickAccess.customers'),
+      icon: { name: 'account-group', type: 'material-community' },
+
+      stack: 'Customers',
+      screen: 'CustomersList',
+    },
+    {
+      label: t('dashboard.quickAccess.services'),
+      icon: { name: 'tools', type: 'material-community' },
+
+      stack: 'Settings',
+      screen: 'ServicesList',
+    },
+    {
+      label: t('dashboard.quickAccess.reports'),
+      icon: { name: 'bar-chart', type: 'material' },
+
+      stack: 'Orders',
+      screen: 'ReportsScreen',
+    },
+    {
+      label: t('dashboard.quickAccess.shopProfile'),
+      icon: { name: 'store', type: 'material' },
+
+      stack: 'Settings',
+      screen: 'ShopProfile',
+    },
+    {
+      label: t('dashboard.quickAccess.settings'),
+      icon: { name: 'settings', type: 'material' },
+
+      stack: 'Settings',
+      screen: 'SettingsScreen',
+    },
+  ];
+
   useEffect(() => {
     const getTodayStats = async () => {
       try {
+        setShop(JSON.parse(await AsyncStorage.getItem('shop')));
+        setUser(JSON.parse(await AsyncStorage.getItem('user')));
+
         const token = await AsyncStorage.getItem('userToken');
 
         const response = await axios.get(`${BASE_URL}/api/analytics/today`, {
@@ -365,25 +394,25 @@ export default function HomeDashboardScreen({ navigation }) {
 
         setTodayStats([
           {
-            label: 'Orders Today',
+            label: t('dashboard.today.orders'),
             value: apiData?.totalOrdersToday,
             icon: 'today',
             color: '#007AFF',
           },
           {
-            label: 'Pending Orders',
+            label: t('dashboard.today.pending'),
             value: apiData?.pendingOrdersToday,
             icon: 'hourglass-empty',
             color: '#FF9500',
           },
           {
-            label: 'Delivered',
+            label: t('dashboard.today.delivered'),
             value: apiData?.deliveredOrdersToday,
             icon: 'check-circle-outline',
             color: '#34C759',
           },
           {
-            label: 'Due Amount',
+            label: t('dashboard.today.due'),
             value: apiData?.totalDueAmount,
             icon: 'payments',
             color: '#FF3B30',
@@ -404,16 +433,16 @@ export default function HomeDashboardScreen({ navigation }) {
     () => [
       {
         key: 'NewOrder',
-        title: 'New Order',
-        description: 'Create a new order',
+        title: t('dashboard.newOrder.title'),
+        description: t('dashboard.newOrder.description'),
         icon: PlusIcon,
         gradient: ['#665AFF', '#9993FF'],
         onPress: () => navigation.navigate('Orders', { screen: 'CreateOrder' }),
       },
       {
         key: 'AddCustomer',
-        title: 'Add Customer',
-        description: 'add a new customer',
+        title: t('dashboard.addCustomer.title'),
+        description: t('dashboard.addCustomer.description'),
         icon: UsersIcon,
         gradient: ['#FF3F54', '#FF7382'],
 
@@ -428,9 +457,10 @@ export default function HomeDashboardScreen({ navigation }) {
     <SafeAreaView style={styles.rootContainer}>
       {/* 1. APP HEADER (Fixed at Top) */}
       <AppHeader
-        shopName={DUMMY_SHOP_NAME}
-        userName={DUMMY_USER_NAME}
-        pendingAlerts={PENDING_ALERTS}
+        shopName={shop?.name || '...'}
+        userName={user?.name || '...'}
+        translation={t}
+        pendingAlerts={3}
         onSettingsPress={() => handleNavigate('SettingsScreen')}
         onNotificationsPress={() => handleNavigate('NotificationsScreen')}
       />
@@ -450,7 +480,9 @@ export default function HomeDashboardScreen({ navigation }) {
         todayStats[2]?.value == 0 &&
         todayStats[3]?.value == 0 ? null : (
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Today at a Glance</Text>
+            <Text style={styles.sectionTitle}>
+              {t('dashboard.today.title')}
+            </Text>
             <View style={styles.statGrid}>
               {todayStats?.map((stat, index) => (
                 <StatCard key={index} {...stat} />
@@ -496,7 +528,9 @@ export default function HomeDashboardScreen({ navigation }) {
 
         {/* 4. QUICK NAVIGATION SHORTCUTS */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Quick Access</Text>
+          <Text style={styles.sectionTitle}>
+            {t('dashboard.quickAccess.title')}
+          </Text>
           <View style={[styles.shortcutGrid, { gap: itemSpacing }]}>
             {quickAccessItems.map(item => (
               <QuickShortcut
@@ -513,9 +547,9 @@ export default function HomeDashboardScreen({ navigation }) {
 
         {/* 5. BUSINESS OVERVIEW */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Business Overview</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.report.title')}</Text>
           <BusinessOverviewCard
-            onPress={() => handleNavigate('AnalyticsScreen')}
+            onPress={() => handleNavigate('Report', 'Analytics')}
           />
         </View>
 
@@ -523,7 +557,7 @@ export default function HomeDashboardScreen({ navigation }) {
         {reminders.length > 0 && (
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Action Required</Text>
-            {reminders.map(alert => (
+            {reminders?.map(alert => (
               <TouchableOpacity
                 key={alert.id}
                 style={styles.reminderCard}
@@ -555,7 +589,7 @@ export default function HomeDashboardScreen({ navigation }) {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Recent Activity</Text>
           <View style={styles.activityList}>
-            {recentActivity.map((activity, index) => (
+            {recentActivity?.map((activity, index) => (
               <Text key={index} style={styles.activityItem}>
                 • {activity}
               </Text>

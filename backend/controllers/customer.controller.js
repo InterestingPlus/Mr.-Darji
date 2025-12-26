@@ -25,7 +25,7 @@ export const AddCustomer = async (req, res) => {
     const customer_id = generateId();
     const created_at = new Date();
 
-    await sheet.insert("Customers", [
+    const customer = await sheet.insert("Customers", [
       customer_id,
       JSON.stringify([userDoc?.shopId]),
       fullName,
@@ -38,9 +38,9 @@ export const AddCustomer = async (req, res) => {
       created_at,
     ]);
 
-    console.log("Customer added successfully!", fullName);
+    console.log("Customer added successfully!", customer);
 
-    res.status(200).json({ message: "Customer added successfully!" });
+    res.status(200).json({ message: "Customer added successfully!", customer });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });

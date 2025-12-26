@@ -1,0 +1,121 @@
+{
+  "dashboard": {
+    "greeting": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+
+    "today": {
+      "title": "Today at a Glance",
+      "orders": "Orders Today",
+      "pending": "Pending Orders",
+      "delivered": "Delivered",
+      "due": "Due Amount"
+    },
+
+    "newOrder": {
+      "title": "New Order",
+      "description": "Create a new order"
+    },
+    "addCustomer": {
+      "title": "Add Customer",
+      "description": "add a new customer"
+    },
+
+    "quickAccess": {
+      "title": "Quick Access",
+
+      "orders": "Orders",
+      "customers": "Customers",
+      "services": "Services",
+      "reports": "Reports",
+      "shopProfile": "Shop Profile",
+      "settings": "Settings"
+    },
+
+    "report": {
+      "title": "Business Overview",
+      "description": "Orders - Last 7 Days",
+      "button": "View Detailed Analytics"
+    }
+  },
+
+  "register": {
+    "google": { "loading": "Verifying...", "button": "Continue with Google" },
+    "language": {
+      "choose": "Choose Your Language",
+
+      "button": "Next: Owner Details"
+    },
+    "owner": {
+      "title": "Owner Information",
+      "name": "Enter Your Name",
+
+      "phone": "Contact Number",
+      "phonePlaceholder": "e.g. '7201840095'",
+
+      "button": "Next: Shop Details"
+    },
+    "shop": {
+      "title": "Shop Details",
+
+      "name": "Tailor Shop Name",
+      "namePlaceholder": "Shop Name",
+
+      "type": "Shop Category",
+
+      "address": "Shop Address",
+      "addressPlaceholder": "Rajula",
+
+      "submit": "REGISTER & FINISH"
+    }
+  },
+
+  "order": {
+    "create": {
+      "title": "New Order",
+
+      "customer": {
+        "title": "Select Customer",
+        "button": "Tap to Select Customer",
+        "add": "Add New Customer",
+        "empty": "No customers found!",
+        "close": "Close"
+      },
+
+      "service": {
+        "title": "Order Items",
+        "Item": "Item",
+        "delete": "Delete",
+
+        "service": "Service",
+        "button": "Tap to Select Service",
+
+        "price": "Price",
+        "days": "Est. Days",
+        "select": "Select Service",
+        "addNew": "Add New Service",
+        "manage": "Manage Your Service",
+
+        "add": "Add Item (Pant/Shirt/etc.)",
+        "empty": "No Services found!",
+        "close": "Close",
+
+        "quantity": "Quantity"
+      },
+
+      "measurements": {
+        "title": "Measurements",
+        "add": "Add Custom Field",
+        "duplicateError": {
+          "title": "Key Exists",
+          "description": "Please enter a unique field name!"
+        },
+
+        "delete": "Confirm Delete Field",
+        "confirm": "Are you sure to delete the field"
+      }
+    }
+  }
+}

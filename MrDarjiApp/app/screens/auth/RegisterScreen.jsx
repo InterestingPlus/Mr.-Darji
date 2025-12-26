@@ -23,6 +23,11 @@ import BASE_URL from '../../config';
 import { useContext } from 'react';
 import { AuthContext } from '../../navigation/AppNavigator';
 import GoogleLogin from './GoogleLogin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/i18n';
+
 // import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // --- Icon Component (Adapted from LoginScreen style) ---
@@ -104,6 +109,8 @@ const GradientButton = ({
 const { height } = Dimensions.get('window');
 
 export default function RegisterScreen({ navigation }) {
+  const { t } = useTranslation();
+
   const [step, setStep] = useState('home');
   const [language, setLanguage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -112,6 +119,12 @@ export default function RegisterScreen({ navigation }) {
   const [verifiedUser, setVerifiedUser] = useState(null);
 
   const { signIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    i18n.changeLanguage(
+      language === 'Hindi' ? 'hi' : language === 'Gujarati' ? 'gu' : 'en',
+    );
+  }, [language]);
 
   const SHOP_TYPES = [
     'Tailor',
@@ -159,6 +172,7 @@ export default function RegisterScreen({ navigation }) {
       const response = await axios.post(
         `${BASE_URL}/api/auth/register-owner-shop`,
         {
+          photo: verifiedUser?.picture,
           name: form.name,
           phone: form.phone,
           email: verifiedUser?.email,
@@ -176,15 +190,25 @@ export default function RegisterScreen({ navigation }) {
         },
       );
 
-      Alert.alert('Registration Successful!');
+      Alert.alert('✅ Registration Successful');
 
       const token = response.data.token;
+
+      await AsyncStorage.setItem(
+        'user',
+        JSON.stringify(response.data?.user || {}),
+      );
+      await AsyncStorage.setItem(
+        'shop',
+        JSON.stringify(response.data?.shop || {}),
+      );
+
       signIn(token);
 
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log('Axios Error Object:', e);
+      console.log('Axios Error :', e);
 
       const serverMessage =
         e.response?.data?.error || e.response?.data?.message;
@@ -247,7 +271,7 @@ export default function RegisterScreen({ navigation }) {
           onPress={() => setVisible(true)}
         >
           <Text style={shopTypeStyles.inputText}>
-            {value || 'Select your primary shop category'}
+            {value || t('register.shop.type')}
           </Text>
         </TouchableOpacity>
 
@@ -393,7 +417,9 @@ export default function RegisterScreen({ navigation }) {
           {step === 'language' && (
             <StepContainer>
               <View style={styles.stepContainer}>
-                <Text style={styles.stepTitle}>1. Choose Your Language</Text>
+                <Text style={styles.stepTitle}>
+                  1. {t('register.language.choose')}
+                </Text>
 
                 {['English', 'Hindi', 'Gujarati'].map(lang => (
                   <TouchableOpacity
@@ -410,7 +436,13 @@ export default function RegisterScreen({ navigation }) {
                         language === lang && styles.languageTextSelected,
                       ]}
                     >
-                      {lang}
+                      {lang === 'English'
+                        ? 'English'
+                        : lang === 'Gujarati'
+                        ? 'ગુજરાતી'
+                        : lang === 'Hindi'
+                        ? 'हिंदी'
+                        : 'English'}
                     </Text>
                     {language === lang && (
                       <CustomIcon name="Check" color="#4F46E5" size={24} />
@@ -421,7 +453,7 @@ export default function RegisterScreen({ navigation }) {
                 <GradientButton
                   disabled={!language}
                   onPress={() => setStep('owner')}
-                  text="Next: Owner Details"
+                  text={t('register.language.button')}
                   colors={['#10B981', '#34D399']} // Emerald Green
                   style={{ marginTop: 40 }}
                 />
@@ -433,7 +465,9 @@ export default function RegisterScreen({ navigation }) {
           {step === 'owner' && (
             <StepContainer>
               <View style={styles.stepContainer}>
-                <Text style={styles.stepTitle}>2. Owner Information</Text>
+                <Text style={styles.stepTitle}>
+                  2. {t('register.owner.title')}
+                </Text>
 
                 {verifiedUser && (
                   <View style={styles.card}>
@@ -446,7 +480,7 @@ export default function RegisterScreen({ navigation }) {
                   </View>
                 )}
 
-                {renderTextInput('name', 'Your Full Name', 'User')}
+                {renderTextInput('name', t('register.owner.name'), 'User')}
 
                 <GradientButton
                   onPress={() => setStep('contact')}
@@ -462,13 +496,20 @@ export default function RegisterScreen({ navigation }) {
           {step === 'contact' && (
             <StepContainer>
               <View style={styles.stepContainer}>
-                <Text style={styles.stepTitle}>3. Contact </Text>
+                <Text style={styles.stepTitle}>
+                  3. {t('register.owner.phone')}
+                </Text>
 
-                {renderTextInput('phone', 'Phone Number', 'Phone', 'phone-pad')}
+                {renderTextInput(
+                  'phone',
+                  t('register.owner.phonePlaceholder'),
+                  'Phone',
+                  'phone-pad',
+                )}
 
                 <GradientButton
                   onPress={() => setStep('shop')}
-                  text="Next: Shop Details"
+                  text={t('register.owner.button')}
                   colors={['#FBBF24', '#F97316']} // Amber/Orange
                   style={{ marginTop: 20 }}
                 />
@@ -480,17 +521,27 @@ export default function RegisterScreen({ navigation }) {
           {step === 'shop' && (
             <StepContainer>
               <View style={styles.stepContainer}>
-                <Text style={styles.stepTitle}>4. Shop Details</Text>
+                <Text style={styles.stepTitle}>
+                  4. {t('register.shop.title')}
+                </Text>
 
                 <View style={styles.divider}>
-                  <Text style={styles.dividerText}>Tailor Shop Name *</Text>
+                  <Text style={styles.dividerText}>
+                    {t('register.shop.name')} *
+                  </Text>
                   <View style={styles.dividerLine} />
                 </View>
 
-                {renderTextInput('shopName', 'Shop Name', 'Shop')}
+                {renderTextInput(
+                  'shopName',
+                  t('register.shop.namePlaceholder'),
+                  'Shop',
+                )}
 
                 <View style={styles.divider}>
-                  <Text style={styles.dividerText}>Shop Type *</Text>
+                  <Text style={styles.dividerText}>
+                    {t('register.shop.type')} *
+                  </Text>
                   <View style={styles.dividerLine} />
                 </View>
 
@@ -500,13 +551,15 @@ export default function RegisterScreen({ navigation }) {
                 />
 
                 <View style={{ ...styles.divider, marginTop: 30 }}>
-                  <Text style={styles.dividerText}>Shop Address *</Text>
+                  <Text style={styles.dividerText}>
+                    {t('register.shop.address')} *
+                  </Text>
                   <View style={styles.dividerLine} />
                 </View>
 
                 {renderTextInput(
                   'shopAddress',
-                  'Shop Address',
+                  t('register.shop.addressPlaceholder'),
                   'MapPin',
                   'default',
                 )}
@@ -514,7 +567,7 @@ export default function RegisterScreen({ navigation }) {
                 <GradientButton
                   onPress={register}
                   loading={loading}
-                  text="REGISTER & FINISH"
+                  text={t('register.shop.submit')}
                   colors={['#4F46E5', '#6366F1']} // Final Indigo
                   style={{ marginTop: 30 }}
                   textStyle={{ fontSize: 20 }}
@@ -662,7 +715,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#4F46E5',
     marginBottom: 30,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   // --- Form Elements (Reused from Login Styles) ---
   inputGroup: {

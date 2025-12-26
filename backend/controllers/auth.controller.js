@@ -15,11 +15,12 @@ const client = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
 
 export const registerOwnerShop = async (req, res) => {
   const {
+    photo = "",
     name,
     email,
     phone,
     shopName,
-    language = "en",
+    language,
     shopType = "Tailor",
     addressLine1 = "N/A",
     city = "N/A",
@@ -66,7 +67,7 @@ export const registerOwnerShop = async (req, res) => {
         languageCode = "hi";
         break;
       case "Gujarati":
-        languageCode = "mr";
+        languageCode = "gu";
         break;
       default:
         languageCode = "en";
@@ -74,11 +75,12 @@ export const registerOwnerShop = async (req, res) => {
     }
 
     const user = await User.create({
+      photo,
       name,
       email,
       phone,
       role: "owner",
-      languageCode,
+      language: languageCode,
     });
 
     console.log("Created User", user);
@@ -101,6 +103,8 @@ export const registerOwnerShop = async (req, res) => {
         slug: slug,
         owner_id: user._id,
         shopType: shopType, // <--- Required as per schema
+        logo: photo,
+
         contact: {
           phone: phone || "0000000000", // Mandatory Contact field needed
           address: {
@@ -124,7 +128,6 @@ export const registerOwnerShop = async (req, res) => {
       userId: user._id,
       role: "owner",
       shopId: shop._id,
-      language: user.language,
     });
 
     console.log("Token", token);
@@ -172,11 +175,12 @@ export const googleLogin = async (req, res) => {
       return res.status(200).json({ message: "Please Sign up!", user: null });
     }
 
+    const shop = await Shop.findById(user?.shopId);
+
     const token = signToken({
       userId: user._id,
       role: user.role,
       shopId: user.shopId,
-      language: user.language,
     });
 
     console.log("token bhej diya gaya hai", token, {
@@ -188,14 +192,8 @@ export const googleLogin = async (req, res) => {
 
     res.status(200).json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        phone: user.phone,
-        role: user.role,
-        shopId: user.shopId,
-        language: user.language,
-      },
+      user,
+      shop,
     });
   } catch (err) {
     console.error("Login error:", err.message);

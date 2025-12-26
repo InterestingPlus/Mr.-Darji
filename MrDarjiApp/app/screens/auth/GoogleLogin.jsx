@@ -1,10 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import {
   Alert,
-  Button,
   View,
   Text,
-  ScrollView,
   StyleSheet,
   Image,
   TouchableOpacity,
@@ -12,9 +10,6 @@ import {
 
 import {
   GoogleSignin,
-  GoogleSigninButton,
-  isErrorWithCode,
-  isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 
@@ -28,10 +23,15 @@ GoogleSignin.configure({
 import BASE_URL from '../../config';
 import { AuthContext } from '../../navigation/AppNavigator';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/i18n';
 
 const GoogleLogin = ({ setVerifiedUser }) => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useContext(AuthContext);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function signOutUser() {
@@ -65,11 +65,27 @@ const GoogleLogin = ({ setVerifiedUser }) => {
         setVerifiedUser(userInfo?.data?.user);
       } else {
         const token = response.data.token;
+
+        await AsyncStorage.setItem(
+          'user',
+          JSON.stringify(response.data?.user || {}),
+        );
+        await AsyncStorage.setItem(
+          'shop',
+          JSON.stringify(response.data?.shop || {}),
+        );
+
+        console.log(response.data?.user?.language);
+
+        i18n.changeLanguage(response.data?.user?.language);
+
         signIn(token);
       }
 
       setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('User cancelled');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -81,8 +97,6 @@ const GoogleLogin = ({ setVerifiedUser }) => {
         Alert.alert('SIGNIN ERROR', error.message || JSON.stringify(error));
         // Alert.alert('Unknown error', error.message || JSON.stringify(error));
       }
-
-      setLoading(false);
     }
   };
 
@@ -117,7 +131,9 @@ const GoogleLogin = ({ setVerifiedUser }) => {
           </View>
 
           <Text style={styles.buttonText}>
-            {loading ? 'Verifying...' : 'Continue with Google'}
+            {loading
+              ? t('register.google.loading')
+              : t('register.google.button')}
           </Text>
 
           {/* 3. Subtle Inner Border for Depth */}
@@ -138,7 +154,7 @@ const styles = StyleSheet.create({
 
   outerContainer: {
     marginHorizontal: 35,
-    marginTop: 30,
+    marginTop: 10,
     borderRadius: 18,
 
     elevation: 12,

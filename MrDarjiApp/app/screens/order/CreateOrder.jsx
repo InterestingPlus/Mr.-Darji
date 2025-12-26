@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useTransition,
+} from 'react';
 import {
   View,
   Text,
@@ -139,7 +145,7 @@ const DynamicMeasurementEditor = ({
   const handleDeleteField = (key, label) => {
     Alert.alert(
       'Confirm Deletion',
-      `Are you sure you want to delete the field: "${label}"?`,
+      `Are you sure to delete the field: "${label}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -203,7 +209,28 @@ const DynamicMeasurementEditor = ({
   );
 };
 
-export default function CreateOrderForm({ navigation }) {
+export default function CreateOrderForm({ navigation, route }) {
+  const { t } = useTransition();
+
+  const NewCustomer = route?.params?.customer || null;
+  const NewService = route?.params?.service || null;
+
+  console.log('NewCustomer', NewCustomer);
+  console.log('NewService', NewService);
+
+  // const cus = {
+  //   address: 'Hahahaj',
+  //   created_at: '2025-12-26T08:06:55.211Z',
+  //   customer_id: 1766736416041,
+  //   full_name: 'Final',
+  //   gender: 'Female',
+  //   image_url: '',
+  //   phone: '3445456454',
+  //   shop_id: '["694d6e65fcc0bf8054dce142"]',
+  //   tags: '[]',
+  //   updated_at: '2025-12-26T08:06:55.211Z',
+  // };
+
   const [customer, setCustomer] = useState({});
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
@@ -237,6 +264,8 @@ export default function CreateOrderForm({ navigation }) {
 
   useEffect(() => {
     const fetchServices = async () => {
+      setIsLoading(true);
+
       try {
         const token = await AsyncStorage.getItem('userToken');
 
@@ -249,7 +278,11 @@ export default function CreateOrderForm({ navigation }) {
 
         const apiData = response.data.data;
         setServices(apiData || []);
+
+        setIsLoading(false);
       } catch (e) {
+        setIsLoading(true);
+
         console.error('Failed to fetch services:', e);
         Toast.show({
           type: 'error',
@@ -260,7 +293,7 @@ export default function CreateOrderForm({ navigation }) {
     };
 
     fetchServices();
-  }, []);
+  }, [NewService]);
 
   // --- Dynamic Calculations ---
   const calculateTotalPrice = useMemo(() => {
@@ -321,6 +354,8 @@ export default function CreateOrderForm({ navigation }) {
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
+        setIsLoading(true);
+
         const token = await AsyncStorage.getItem('userToken');
 
         const response = await axios.get(`${BASE_URL}/api/customers`, {
@@ -332,7 +367,9 @@ export default function CreateOrderForm({ navigation }) {
 
         const apiData = response.data.data;
         setCustomers(apiData);
+        setIsLoading(false);
       } catch (e) {
+        setIsLoading(false);
         console.error('Failed to fetch customer:', e);
         Toast.show({
           type: 'error',
@@ -342,8 +379,12 @@ export default function CreateOrderForm({ navigation }) {
       }
     };
 
+    if (NewCustomer !== {}) {
+      setCustomer(NewCustomer);
+    }
+    setShowCustomerModal(false);
     fetchCustomer();
-  }, []);
+  }, [NewCustomer]);
 
   const [measurementFields, setMeasurementFields] = useState();
   useEffect(() => {
@@ -518,8 +559,6 @@ export default function CreateOrderForm({ navigation }) {
         };
       }, {});
 
-      console.log(newMeasurements);
-
       onChange(index, { service_id, measurement_fields: newMeasurements });
     };
 
@@ -613,6 +652,7 @@ export default function CreateOrderForm({ navigation }) {
           onSelectService={handleServiceSelect}
           allServices={services}
           navigation={navigation}
+          customer={customer}
         />
       </View>
     );
@@ -765,7 +805,7 @@ export default function CreateOrderForm({ navigation }) {
           </TouchableOpacity>
         )}
 
-        <Text style={styles.label}>Staff Assigned</Text>
+        {/* <Text style={styles.label}>Staff Assigned</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={staffAssigned}
@@ -776,7 +816,7 @@ export default function CreateOrderForm({ navigation }) {
               <Picker.Item key={s.id} label={s.name} value={s.id} />
             ))}
           </Picker>
-        </View>
+        </View> */}
 
         <Text style={styles.label}>Order Notes</Text>
         <TextInput
@@ -818,6 +858,8 @@ export default function CreateOrderForm({ navigation }) {
         onSelectCustomer={handleSelectCustomer}
         allCustomers={customers}
         navigation={navigation}
+        selected={customer}
+        isLoading={isLoading}
       />
 
       <Toast />

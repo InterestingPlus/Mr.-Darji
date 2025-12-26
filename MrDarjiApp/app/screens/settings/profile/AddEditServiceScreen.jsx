@@ -21,7 +21,7 @@ import { Button, Icon } from 'react-native-elements';
 import BASE_URL from '../../../config'; // Assuming this is defined
 
 const AddEditServiceScreen = ({ route, navigation }) => {
-  const { mode, serviceData } = route.params;
+  const { mode, serviceData, from = null, customer = null } = route.params;
 
   const initialState = {
     name: '',
@@ -120,7 +120,23 @@ const AddEditServiceScreen = ({ route, navigation }) => {
         } successfully.`,
       );
 
-      navigation.navigate('ServicesList');
+      setFormData(initialState);
+
+      if (mode !== 'edit') {
+        if (from === 'CreateOrder') {
+          navigation.navigate('Orders', {
+            screen: 'CreateOrder',
+            params: {
+              service: response?.data?.service || {},
+              customer: customer || {},
+            },
+          });
+        } else {
+          navigation.navigate('ServicesList');
+        }
+      } else {
+        navigation.navigate('ServicesList');
+      }
     } catch (error) {
       console.error('Save failed:', error.response?.data || error.message);
       Alert.alert(
@@ -207,9 +223,20 @@ const AddEditServiceScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.screenTitle}>
-          {mode === 'edit' ? 'Edit Service Details' : 'Add a New Service'}
-        </Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.header}>
+            {' '}
+            {mode === 'edit' ? 'Edit Service Details' : 'Add a New Service'}
+          </Text>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() =>
+              navigation.navigate('Settings', { screen: 'SettingsScreen' })
+            }
+          >
+            <Text style={styles.cancelIcon}>✕</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* --- 🧱 Basic Info Section --- */}
         <View style={styles.section}>
@@ -350,6 +377,25 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
   },
+
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    padding: 8,
+  },
+  cancelIcon: {
+    fontSize: 20,
+  },
+
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',

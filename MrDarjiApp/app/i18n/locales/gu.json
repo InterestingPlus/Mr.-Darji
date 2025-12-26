@@ -1,0 +1,121 @@
+{
+  "dashboard": {
+    "greeting": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+
+    "today": {
+      "title": "આજની ઝલક",
+      "orders": "આજના ઓર્ડર્સ",
+      "pending": "બાકી ઓર્ડર્સ",
+      "delivered": "ડિલિવર થયેલ",
+      "due": "બાકી રકમ"
+    },
+
+    "newOrder": {
+      "title": "નવો ઓર્ડર",
+      "description": "નવો ઓર્ડર બનાવો"
+    },
+    "addCustomer": {
+      "title": "ગ્રાહક ઉમેરો",
+      "description": "નવો ગ્રાહક ઉમેરો"
+    },
+    "quickAccess": {
+      "title": "ઝડપી ઍક્સેસ",
+      "orders": "ઓર્ડર",
+      "customers": "ગ્રાહકો",
+      "services": "સેવાઓ",
+      "reports": "રિપોર્ટ",
+      "shopProfile": "દુકાન પ્રોફાઇલ",
+      "settings": "સેટિંગ્સ"
+    },
+    "report": {
+      "title": "વ્યવસાય અવલોકન",
+      "description": "છેલ્લા 7 દિવસના ઓર્ડર",
+      "button": "વિગતવાર વિશ્લેષણ જુઓ"
+    }
+  },
+
+  "register": {
+    "google": {
+      "loading": "ચકાસણી થઈ રહી છે...",
+      "button": "Google સાથે આગળ વધો"
+    },
+    "language": {
+      "choose": "ભાષા પસંદ કરો",
+
+      "button": "આગળ: માલિકની વિગતો"
+    },
+    "owner": {
+      "title": "માલિકની માહિતી",
+      "name": "તમારું નામ દાખલ કરો",
+
+      "phone": "સંપર્ક નંબર",
+      "phonePlaceholder": "ઉદાહરણ: '7201840095'",
+
+      "button": "આગળ: દુકાનની વિગતો"
+    },
+    "shop": {
+      "title": "દુકાનની વિગતો",
+
+      "name": "દરજી દુકાનનું નામ",
+      "namePlaceholder": "દુકાનનું નામ",
+
+      "type": "દુકાનનો પ્રકાર",
+
+      "address": "દુકાનનું સરનામું",
+      "addressPlaceholder": "ઉદાહરણ: 'રાજુલા'",
+
+      "submit": "નોંધણી કરો અને પૂર્ણ કરો"
+    }
+  },
+
+  "order": {
+    "create": {
+      "title": "નવો ઓર્ડર",
+
+      "customer": {
+        "title": "ગ્રાહક પસંદ કરો",
+        "button": "ગ્રાહક પસંદ કરવા માટે ટેપ કરો",
+        "add": "નવો ગ્રાહક ઉમેરો",
+        "empty": "કોઈ ગ્રાહક મળ્યો નથી!",
+        "close": "બંધ કરો"
+      },
+
+      "service": {
+        "title": "ઓર્ડર આઇટમ્સ",
+        "Item": "આઇટમ",
+        "delete": "કાઢી નાખો",
+
+        "service": "સેવા",
+        "button": "સેવા પસંદ કરવા માટે ટેપ કરો",
+
+        "price": "કિંમત",
+        "days": "અંદાજિત દિવસો",
+        "select": "સેવા પસંદ કરો",
+        "addNew": "નવી સેવા ઉમેરો",
+        "manage": "તમારી સેવાઓ મેનેજ કરો",
+
+        "add": "આઇટમ ઉમેરો (પેન્ટ/શર્ટ વગેરે)",
+        "empty": "કોઈ સેવાઓ મળી નથી!",
+        "close": "બંધ કરો",
+
+        "quantity": "જથ્થો"
+      },
+
+      "measurements": {
+        "title": "માપ",
+        "add": "કસ્ટમ ફીલ્ડ ઉમેરો",
+        "duplicateError": {
+          "title": "કી પહેલેથી હાજર છે",
+          "description": "કૃપા કરીને અનન્ય ફીલ્ડ નામ દાખલ કરો!"
+        },
+
+        "delete": "ફીલ્ડ કાઢી નાખવાની પુષ્ટિ કરો",
+        "confirm": "શું તમે ખરેખર આ ફીલ્ડ કાઢી નાખવા માંગો છો"
+      }
+    }
+  }
+}

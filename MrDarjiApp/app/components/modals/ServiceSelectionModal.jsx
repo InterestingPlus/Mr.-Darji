@@ -9,7 +9,7 @@ import {
   Modal,
   FlatList,
   StyleSheet,
-  ActivityIndicator, // Added Loading Indicator
+  ActivityIndicator,
 } from 'react-native';
 
 const ServiceSelectionModal = ({
@@ -19,6 +19,7 @@ const ServiceSelectionModal = ({
   allServices,
   isLoading, // New Prop for Loading State
   navigation,
+  customer,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -63,11 +64,28 @@ const ServiceSelectionModal = ({
             onChangeText={setSearchQuery}
           />
 
+          <TouchableOpacity
+            style={modalStyles.addNewButton}
+            onPress={() => {
+              navigation.navigate('Settings', {
+                screen: 'AddEditService',
+                params: {
+                  from: 'CreateOrder',
+                  customer,
+                },
+              });
+            }}
+          >
+            <Text style={modalStyles.addNewButtonText}>+ Add New Service</Text>
+          </TouchableOpacity>
+
           {/* Note: navigation is not defined here unless passed or used via hook */}
           <TouchableOpacity
             style={modalStyles.addNewButton}
             onPress={() => {
-              navigation.navigate('Settings', { screen: 'ServicesList' });
+              navigation.navigate('Settings', {
+                screen: 'ServicesList',
+              });
             }}
           >
             <Text style={modalStyles.addNewButtonText}>

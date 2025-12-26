@@ -1,0 +1,121 @@
+{
+  "dashboard": {
+    "greeting": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+
+    "today": {
+      "title": "आज की झलक",
+      "orders": "आज के ऑर्डर",
+      "pending": "लंबित ऑर्डर",
+      "delivered": "डिलीवर किए गए",
+      "due": "बकाया राशि"
+    },
+
+    "newOrder": {
+      "title": "नया ऑर्डर",
+      "description": "नया ऑर्डर बनाएं"
+    },
+    "addCustomer": {
+      "title": "ग्राहक जोड़ें",
+      "description": "नया ग्राहक जोड़ें"
+    },
+    "quickAccess": {
+      "title": "त्वरित पहुंच",
+      "orders": "ऑर्डर",
+      "customers": "ग्राहक",
+      "services": "सेवाएं",
+      "reports": "रिपोर्ट",
+      "shopProfile": "दुकान प्रोफ़ाइल",
+      "settings": "सेटिंग्स"
+    },
+    "report": {
+      "title": "व्यवसाय अवलोकन",
+      "description": "पिछले 7 दिनों के ऑर्डर",
+      "button": "विस्तृत विश्लेषण देखें"
+    }
+  },
+
+  "register": {
+    "google": {
+      "loading": "सत्यापन हो रहा है...",
+      "button": "Google के साथ जारी रखें"
+    },
+    "language": {
+      "choose": "अपनी भाषा चुनें",
+
+      "button": "आगे: मालिक की जानकारी"
+    },
+    "owner": {
+      "title": "मालिक की जानकारी",
+      "name": "अपना नाम दर्ज करें",
+
+      "phone": "संपर्क नंबर",
+      "phonePlaceholder": "उदाहरण: '7201840095'",
+
+      "button": "आगे: दुकान की जानकारी"
+    },
+    "shop": {
+      "title": "दुकान की जानकारी",
+
+      "name": "दर्जी दुकान का नाम",
+      "namePlaceholder": "दुकान का नाम",
+
+      "type": "दुकान की श्रेणी",
+
+      "address": "दुकान का पता",
+      "addressPlaceholder": "उदाहरण: 'राजुला'",
+
+      "submit": "पंजीकरण करें और समाप्त करें"
+    }
+  },
+
+  "order": {
+    "create": {
+      "title": "नया ऑर्डर",
+
+      "customer": {
+        "title": "ग्राहक चुनें",
+        "button": "ग्राहक चुनने के लिए टैप करें",
+        "add": "नया ग्राहक जोड़ें",
+        "empty": "कोई ग्राहक नहीं मिला!",
+        "close": "बंद करें"
+      },
+
+      "service": {
+        "title": "ऑर्डर आइटम",
+        "Item": "आइटम",
+        "delete": "हटाएं",
+
+        "service": "सेवा",
+        "button": "सेवा चुनने के लिए टैप करें",
+
+        "price": "कीमत",
+        "days": "अनुमानित दिन",
+        "select": "सेवा चुनें",
+        "addNew": "नई सेवा जोड़ें",
+        "manage": "अपनी सेवाएं प्रबंधित करें",
+
+        "add": "आइटम जोड़ें (पैंट/शर्ट आदि)",
+        "empty": "कोई सेवा नहीं मिली!",
+        "close": "बंद करें",
+
+        "quantity": "मात्रा"
+      },
+
+      "measurements": {
+        "title": "माप",
+        "add": "कस्टम फ़ील्ड जोड़ें",
+        "duplicateError": {
+          "title": "कुंजी पहले से मौजूद है",
+          "description": "कृपया एक अलग फ़ील्ड नाम दर्ज करें!"
+        },
+
+        "delete": "फ़ील्ड हटाने की पुष्टि करें",
+        "confirm": "क्या आप वाकई इस फ़ील्ड को हटाना चाहते हैं"
+      }
+    }
+  }
+}

@@ -2,19 +2,6 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const mediaSchema = new Schema(
-  {
-    url: { type: String, required: true },
-    publicId: { type: String, required: true },
-    type: {
-      type: String,
-      enum: ["work", "design", "before_after", "logo", "cover"],
-      default: "work",
-    },
-  },
-  { _id: false }
-);
-
 const addressSchema = new Schema(
   {
     line1: { type: String, trim: true },
@@ -68,9 +55,9 @@ const ShopSchema = new Schema(
     tagline: { type: String, trim: true, maxlength: 150 },
 
     // 🧩 2. Branding & Media
-    logo: mediaSchema,
-    coverImage: mediaSchema,
-    gallery: [mediaSchema],
+    logo: { type: String },
+    coverImage: { type: String },
+    gallery: [{ type: String }],
 
     // 🧩 3. Contact & Location
     contact: {

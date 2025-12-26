@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  Keyboard,
 } from 'react-native';
 // import * as Haptics from 'expo-haptics';
 import Toast from 'react-native-toast-message';
@@ -51,10 +52,13 @@ const saveCustomerApi = async customerData => {
     },
   );
 
+  console.log(response);
+
   if (response.status == 200) {
     return {
       success: true,
       message: `Customer ${customerData.fullName} added successfully!`,
+      customer: response?.data?.customer,
     };
   }
 };
@@ -88,7 +92,9 @@ const TagsMultiSelect = ({ selectedTags, onToggleTag }) => (
 
 // --- Main Form Component ---
 
-export default function AddCustomerForm({ navigation }) {
+export default function AddCustomerForm({ navigation, route }) {
+  const from = route?.params?.from || null;
+
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState(GENDERS[0]); // Default to first gender
@@ -139,6 +145,7 @@ export default function AddCustomerForm({ navigation }) {
 
     try {
       const response = await saveCustomerApi(customerData);
+      console.log(response);
 
       // Success Handling
       if (response.success) {
@@ -162,7 +169,14 @@ export default function AddCustomerForm({ navigation }) {
         setTags([]);
         setErrors({});
 
-        navigation.navigate('CustomersList');
+        if (from === 'CreateOrder') {
+          navigation.navigate('Orders', {
+            screen: 'CreateOrder',
+            params: { customer: response?.customer || {} },
+          });
+        } else {
+          navigation.navigate('CustomersList');
+        }
       }
     } catch (error) {
       // 🚨 Error Handling
@@ -232,7 +246,10 @@ export default function AddCustomerForm({ navigation }) {
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={gender}
-            onValueChange={itemValue => setGender(itemValue)}
+            onValueChange={itemValue => {
+              Keyboard.dismiss();
+              setGender(itemValue);
+            }}
             style={styles.picker}
             itemStyle={styles.pickerItem}
           >

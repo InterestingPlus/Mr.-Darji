@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    photo: {
+      type: String,
+    },
     name: {
       type: String,
       required: true,
@@ -24,7 +27,6 @@ const userSchema = new mongoose.Schema(
     shopId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Shop",
-      // required: true,
       default: null,
     },
 

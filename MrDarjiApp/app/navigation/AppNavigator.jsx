@@ -8,10 +8,23 @@ import MainTabs from './MainTabs';
 import DeviceInfo from 'react-native-device-info';
 
 import UpdateModal from '../components/UpdateModal';
+import i18n from '../i18n/i18n';
 
 export const AuthContext = createContext();
 
 export default function AppNavigator() {
+  useEffect(() => {
+    const setLanguage = async () => {
+      const user = JSON.parse(await AsyncStorage.getItem('user')) || '';
+
+      console.log('Stored User', user);
+
+      i18n.changeLanguage(user?.language || 'en');
+    };
+
+    setLanguage();
+  }, []);
+
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
 

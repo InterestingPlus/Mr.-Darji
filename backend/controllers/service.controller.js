@@ -24,7 +24,7 @@ export const AddService = async (req, res) => {
     const service_id = generateId();
     const created_at = new Date();
 
-    await sheet.insert("Services", [
+    const service = await sheet.insert("Services", [
       service_id,
       userDoc?.shopId,
       name,
@@ -38,7 +38,7 @@ export const AddService = async (req, res) => {
 
     console.log("Service added successfully!", name);
 
-    res.status(200).json({ message: "Service added successfully!" });
+    res.status(200).json({ message: "Service added successfully!", service });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });

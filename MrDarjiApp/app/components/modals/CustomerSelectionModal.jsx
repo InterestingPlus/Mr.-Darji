@@ -20,8 +20,9 @@ const CustomerSelectionModal = ({
   onClose,
   onSelectCustomer,
   allCustomers,
-  isLoading,
   navigation,
+  selected,
+  isLoading,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -35,7 +36,13 @@ const CustomerSelectionModal = ({
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={modalStyles.listItem}
+      style={{
+        ...modalStyles.listItem,
+        backgroundColor:
+          item.customer_id === selected?.customer_id ? '#e3ffe5ff' : '#fff',
+        padding: item.customer_id === selected?.customer_id ? 10 : 0,
+        borderRadius: item.customer_id === selected?.customer_id ? 8 : 0,
+      }}
       onPress={() => {
         onSelectCustomer(item);
         onClose();
@@ -69,7 +76,12 @@ const CustomerSelectionModal = ({
           <TouchableOpacity
             style={modalStyles.addNewButton}
             onPress={() => {
-              navigation.navigate('Customers', { screen: 'AddCustomer' });
+              navigation.navigate('Customers', {
+                screen: 'AddCustomer',
+                params: {
+                  from: 'CreateOrder',
+                },
+              });
             }}
           >
             <Text style={modalStyles.addNewButtonText}>+ Add New Customer</Text>

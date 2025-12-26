@@ -165,7 +165,7 @@ const EditShopProfileScreen = ({ route, navigation }) => {
         name: shopData.name || '',
         tagline: shopData.tagline || '',
         shopType: shopData.shopType || '',
-        phone: shopData.contact.phone || '',
+        phone: shopData?.contact?.phone || '',
         alternatePhone: shopData.alternatePhone || '',
         whatsappNumber: shopData.whatsappNumber || '',
         line1: shopData?.contact?.address?.line1 || '',
