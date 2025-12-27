@@ -1,7 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, Linking } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 export default function UpdateModal({ visible, force, updateUrl, setLater }) {
+  const [version, setVersion] = useState(null);
+  const [current, setCurrent] = useState(DeviceInfo.getVersion());
+
+  useEffect(() => {
+    async function fetchVersion() {
+      try {
+        setCurrent(DeviceInfo.getVersion());
+
+        const response = await fetch(
+          'https://mr-darji.netlify.app/app-version.json',
+        );
+        console.log(response);
+        const data = await response.json();
+
+        if (data) {
+          setVersion(data.latestVersion);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    fetchVersion();
+  }, []);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -12,6 +38,10 @@ export default function UpdateModal({ visible, force, updateUrl, setLater }) {
             A new version of Mr. Darji is available. Please update to continue
             using the app.
           </Text>
+          <Text style={styles.desc}>
+            Current Version: {current || '...'} | Latest Version:{' '}
+            {version || '...'}
+          </Text>
 
           <TouchableOpacity
             style={styles.updateBtn}
@@ -19,7 +49,9 @@ export default function UpdateModal({ visible, force, updateUrl, setLater }) {
               Linking.openURL(updateUrl || 'https://mr-darji.netlify.app')
             }
           >
-            <Text style={{ color: '#fff', fontWeight: '600' }}>Update Now</Text>
+            <Text style={{ color: '#fff', fontWeight: '600' }}>
+              Update Now {version ? `- v${version}` : null}
+            </Text>
           </TouchableOpacity>
 
           {!force && (

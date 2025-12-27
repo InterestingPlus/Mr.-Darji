@@ -64,11 +64,6 @@ export default function AppNavigator() {
       console.log(config, current, forceUpdate, softUpdate);
     } catch (err) {
       console.log('Version check failed', err);
-
-      setUpdateConfig({
-        forceUpdate: true,
-      });
-      setForceUpdate(true);
     } finally {
       setIsLoading(false);
     }

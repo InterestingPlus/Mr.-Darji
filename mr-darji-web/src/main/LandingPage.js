@@ -28,34 +28,48 @@ import { useNavigate } from "react-router-dom";
 
 // Logo
 import logo from "../assets/Mr-Darji-.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const [status, setStatus] = useState("idle");
+  const [version, setVersion] = useState(null);
 
-  const handleDownload = () => {
-    setStatus("starting");
-
-    try {
-      setTimeout(async () => {
-        setStatus("downloading");
-
-        // https://mr-darji.netlify.app/app-version.json
-
+  useEffect(() => {
+    async function fetchVersion() {
+      try {
         const response = await fetch(
           "https://mr-darji.netlify.app/app-version.json"
         );
+        console.log(response);
         const data = await response.json();
 
-        const version = data.latestVersion;
-
-        window.location.href = `https://github.com/InterestingPlus/Mr.-Darji/releases/download/v${version}/mr-darji-v${version}.apk`;
-      }, 500);
-    } catch (e) {
-      window.alert("Something went wrong.", e);
+        if (data) {
+          setVersion(data.latestVersion);
+        }
+      } catch (e) {
+        console.log(e);
+        window.alert("Something went wrong", e);
+      }
     }
+
+    fetchVersion();
+  }, []);
+
+  const handleDownload = () => {
+    if (!version) {
+      window.alert("Try Again!");
+      return;
+    }
+
+    setStatus("starting");
+
+    setTimeout(async () => {
+      setStatus("downloading");
+
+      window.location.href = `https://github.com/InterestingPlus/Mr.-Darji/releases/download/v${version}/mr-darji-v${version}.apk`;
+    }, 500);
 
     setTimeout(() => {
       setStatus("done");
@@ -100,8 +114,26 @@ const LandingPage = () => {
               </div>
 
               <div className="cta-group">
-                <button className="btn-primary" onClick={handleDownload}>
-                  {status === "idle" && "Download App"}
+                <button
+                  className="btn-primary"
+                  onClick={handleDownload}
+                  style={{
+                    padding: `${status === "idle" ? "8px 35px" : ""}`,
+                  }}
+                >
+                  {status === "idle" && (
+                    <span
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span>Download App</span>
+
+                      <span>{version ? `v${version}` : "(loading...)"}</span>
+                    </span>
+                  )}
                   {status === "starting" && "Starting…"}
                   {status === "downloading" && "Downloading…"}
                   {status === "done" && "Check Downloads"}{" "}
@@ -369,8 +401,23 @@ const LandingPage = () => {
                   <button
                     className="btn-primary-large"
                     onClick={handleDownload}
+                    style={{
+                      padding: `${status === "idle" ? "8px 35px" : ""}`,
+                    }}
                   >
-                    {status === "idle" && "Download App"}
+                    {status === "idle" && (
+                      <span
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span>Download App</span>
+
+                        <span>v{version}</span>
+                      </span>
+                    )}
                     {status === "starting" && "Starting…"}
                     {status === "downloading" && "Downloading…"}
                     {status === "done" && "Check Downloads"}{" "}
